@@ -13,6 +13,22 @@ function globalHook(window) {
         hook._listeners[evt].map(fn => Promise.resolve().then(fn(data, evt)));
       }
     },
+    toJSON: function(obj = this.fiberlineEvents) {
+      return JSON.stringify(obj.reduce((a, b) => {
+
+        if (!b.fiber) return a;
+
+        if (!a[b.fiber._debugID]){
+            a[b.fiber._debugID] = {};
+        }
+
+        if (!a[b.fiber._debugID][b.evt]) a[b.fiber._debugID][b.evt] = [];
+        a[b.fiber._debugID][b.evt].push({
+            'time': b.time,
+        })
+        return a;
+      }, {}));
+    },
     fiberlineEvents: [],
     updatequeueLog: [],
   };
