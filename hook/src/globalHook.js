@@ -1,3 +1,4 @@
+
 function globalHook(window) {
 
   const hook = {
@@ -25,9 +26,58 @@ function globalHook(window) {
         if (!a[b.fiber._debugID][b.evt]) a[b.fiber._debugID][b.evt] = [];
         a[b.fiber._debugID][b.evt].push({
             'time': b.time,
+            'child': b.child,
+            'effectTag': b.fiber.effectTag,
+            'effectTagEnglish': getEffectTag(b.fiber.effectTag),
+            'tag': getTag(b.fiber.tag),
         })
         return a;
       }, {}));
+    },
+    toCircularJSON: function(object = this.fiberlineEvents) {
+
+        var objects = [],
+            paths = [];
+
+        return JSON.stringify((function derez(value, path) {
+
+            var nu;
+
+            if (value instanceof Object && value !== null &&
+                    !(value instanceof Boolean) &&
+                    !(value instanceof Date)    &&
+                    !(value instanceof Number)  &&
+                    !(value instanceof RegExp)  &&
+                    !(value instanceof String)) {
+
+                for (let i = 0; i < objects.length; i += 1) {
+                    if (objects[i] === value) {
+                        return {'$ref': paths[i]};
+                    }
+                }
+
+                objects.push(value);
+                paths.push(path);
+
+                if (Object.prototype.toString.apply(value) === '[object Array]') {
+                    nu = [];
+                    for (let i = 0; i < value.length; i += 1) {
+                        nu[i] = derez(value[i], path + '[' + i + ']');
+                    }
+                } else {
+
+                    nu = {};
+                    for (let name in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, name)) {
+                            nu[name] = derez(value[name],
+                                path + '[' + JSON.stringify(name) + ']');
+                        }
+                    }
+                }
+                return nu;
+            }
+            return value;
+        }(object, '$')));
     },
     fiberlineEvents: [],
     updatequeueLog: [],

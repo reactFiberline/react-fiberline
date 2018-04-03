@@ -5,6 +5,7 @@
   "main": "AddHook.js",
   "scripts": {
     "build": "webpack",
+    "build:dev": "webpack --mode development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -12,13 +13,15 @@
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-preset-env": "^1.6.1",
-    "eslint": "^4.1.0",
-    "eslint-config-fbjs": "^1.1.1",
-    "eslint-plugin-babel": "^3.3.0",
-    "eslint-plugin-no-for-of-loops": "^1.0.0",
     "webpack": "^4.1.1",
     "webpack-cli": "^2.0.12"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.10.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0"
   }
 }
