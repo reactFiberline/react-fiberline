@@ -37,6 +37,7 @@ module.exports = [
   'hostRootUpdating',
   'hostTextUpdating',
   'indeterminateComponentMounting',
+  'interruption',
   'loadingComponentUpdating',
   'modeUpdating',
   'functionalComponentUpdating',
@@ -48,7 +49,7 @@ module.exports = [
   'shouldComponentUpdateEnd',
   'timeoutComponentUpdating',
   'workLoopStart',
-  'workLoopEndInt',
+  'workLoopEnded',
   'workStarted',
   'workCompleted',
 ];

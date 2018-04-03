@@ -10,12 +10,14 @@ let queries = {
     'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.rawMeasures)',
   //updateQueues: 'JSON.stringify(__REACT_DEVTOOLS_GLOBAL_HOOK__.updateQueues)',
   workLoopMeasures: '__REACT_FIBERLINE_GLOBAL_HOOK__.toJSON()',
+
   clear: `__REACT_PERF_DEVTOOL_GLOBAL_STORE__ = {
           length: 0,
           measures: [],
           rawMeasures: [],
         }`
 }
+
 
 const divStyle = {
   paddingLeft: "400px",
@@ -31,6 +33,7 @@ export class ReactPerfDevtool extends React.Component {
     this.state = {
       rawMeasures: [], 
       workLoopMeasures: [],
+
       loading: false, 
       hasError: false 
     }
@@ -44,7 +47,9 @@ export class ReactPerfDevtool extends React.Component {
     this.setState({ loading: true })
     this.timer = setInterval(() => {
       this.getMeasures();
+
       this.getWorkLoopMeasures();
+
     }, 2000)
   }
 
@@ -70,14 +75,14 @@ export class ReactPerfDevtool extends React.Component {
     })
   }
 
+
   getWorkLoopMeasures = () => {
     this.evaluate(queries['workLoopMeasures'], (measures, err) => {
       if (err) {
         this.setErrorState()
         return
       }
-     // const parsedMeasures = JSON.parse(measures)
-     // console.log("measures",JSON.parse(measures))
+
       this.setState({
         loading: false,
         workLoopMeasures: JSON.parse(measures)
@@ -118,13 +123,17 @@ export class ReactPerfDevtool extends React.Component {
     }
 
     return (
+
       <div style={{"background":"#19004c", "height":"800px", width:"1040px"}}>
+
         {this.state.hasError ? (
           <ErrorComponent />
         ) : (
           <React.Fragment>
+
             <Measures workLoopMeasures={this.state.workLoopMeasures}
             rawMeasures={this.state.rawMeasures} reload={this.reload}/>
+
           </React.Fragment>
         )}
       </div>
@@ -132,9 +141,3 @@ export class ReactPerfDevtool extends React.Component {
   }
 }
 
-
-
-//<div style={divStyle}>
-  //        <Buttons  clear={this.clear} reload={this.reload} />
-          
-    //    </div>

@@ -12,6 +12,7 @@ var buttonContainerStyle = {
   width: "600px"
 };
 
+
 export class Measures extends React.Component {
   constructor(props) {
     super(props)
@@ -207,35 +208,3 @@ export class Measures extends React.Component {
     )
   }
 }
-//#bcdddc   
-
-//{this.state.hint ? 
-//            <div id={'mouser'} style={{fontSize: '15px', marginLeft:'300'}}>
-//            {this.state.hint}
-//            </div> : null}
-
-//<LabelSeries
-//           style={{fontSize: '40px'}}
- //           animation
-///            bottomRight
-//            data={this.state.timelineMeasures} />  
-
-//<Hint value={renderCell}>
-//              <div style={{background: 'grey'}}>
-//                <h3>Value of hint</h3>
-//                <p>{renderCell.name}</p>
-//              </div>
-//            </Hint>
-// {this.state.renderCell ? <Hint value={{x:this.state.renderCell.x, y:this.state.renderCell.y}}>
-//               <div style={{background: 'lightgrey'}}>
-//                 <h3>{this.state.renderCell.name}</h3>
-//                 <p>{(this.state.renderCell.name === 'queue update') ? 'priorityLevel:'+this.state.renderCell.priorityLevel : null}</p>
-//               </div>
-//             </Hint> : null}
-
-// <HorizontalBarSeries onValueRightClick={(d,e)=> {console.log('ima bar',d,e)}} onValueMouseOver={v => this.setState({renderCell: v})} onValueMouseOut={v => this.setState({renderCell: false})} animation
-//             data={this.props.updateQueues.map((queue,i)=>{
-//               if (queue.updateque){
-//                 return { x0:queue.time/1000, x:queue.time/1000+.0003, y:0, name:"queue update", priorityLevel: queue.updateque.first.priorityLevel}
-//               }
-//             })}/>
