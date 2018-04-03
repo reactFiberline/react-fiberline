@@ -44,7 +44,9 @@ export default class Highlight extends AbstractSeries {
       drawArea: {
         top: 0,
         right: location,
-        bottom: innerHeight,
+
+        bottom: innerHeight+40,
+
         left: location
       },
       startLoc: location
@@ -112,6 +114,7 @@ export default class Highlight extends AbstractSeries {
     }
   }
 
+
   render() {
     const {marginLeft, marginTop, innerWidth, innerHeight, color, opacity} = this.props;
     const {drawArea: {left, right, top, bottom}} = this.state;
@@ -121,7 +124,16 @@ export default class Highlight extends AbstractSeries {
          className="highlight-container"
          onMouseUp={(e) => this.stopDrawing()}
          onMouseLeave={(e) => this.stopDrawing()}
-      >
+
+         onTouchEnd={(e) => {
+           e.preventDefault();
+           this.stopDrawing();
+         }}
+         onTouchCancel={(e) => {
+           e.preventDefault();
+           this.stopDrawing();
+         }}>
+
         <rect
           className="mouse-target"
           fill="black"
