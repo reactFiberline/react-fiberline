@@ -85,12 +85,13 @@ export default function reduceHook(hook) {
         if (!b.fiber._debugID) return a;
 
         if (!a[b.fiber._debugID]){
-            a[b.fiber._debugID] = {};
+            a[b.fiber._debugID] = [];
         }
 
-        if (!a[b.fiber._debugID][b.evt]) a[b.fiber._debugID][b.evt] = [];
-        a[b.fiber._debugID][b.evt].push({
+        // if (!a[b.fiber._debugID][b.evt]) a[b.fiber._debugID][b.evt] = [];
+        a[b.fiber._debugID].push({
             'time': b.time,
+            'eventName': b.evt,
             'child': b.fiber.child,
             'effectTag': b.fiber.effectTag,
             'effectTagEnglish': getEffectTag(b.fiber.effectTag),
