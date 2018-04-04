@@ -2,14 +2,14 @@ import React from 'react'
 import { ErrorComponent } from './ErrorComponent'
 import { Measures } from './Measures'
 import { Buttons } from './Buttons'
-
+import retrocycle from './retrocycle'
 // These fields are evaluated in the inspectedWindow to get information about measures.
 let queries = {
   measuresLength: 'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.length)',
   rawMeasures:
     'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.rawMeasures)',
   //updateQueues: 'JSON.stringify(__REACT_DEVTOOLS_GLOBAL_HOOK__.updateQueues)',
-  workLoopMeasures: '__REACT_FIBERLINE_GLOBAL_HOOK__.toJSON()',
+  workLoopMeasures: '__REACT_FIBERLINE_GLOBAL_HOOK__.toCircularJSON()',
 
   clear: `__REACT_PERF_DEVTOOL_GLOBAL_STORE__ = {
           length: 0,
@@ -85,7 +85,7 @@ export class ReactPerfDevtool extends React.Component {
 
       this.setState({
         loading: false,
-        workLoopMeasures: JSON.parse(measures)
+        workLoopMeasures: retrocycle(JSON.parse(measures))
       })
     })
   }
@@ -117,7 +117,7 @@ export class ReactPerfDevtool extends React.Component {
     if (this.state.loading) {
       return (
         <div>
-          <p> Collecting React performance measures... </p>
+          <p> Collecting Data... </p>
         </div>
       )
     }
