@@ -1,9 +1,11 @@
-var installGlobalHook = require('./globalHook.js');
-var inject = require('./inject.js');
+const installGlobalHook = require('./globalHook.js');
+const inject = require('./inject.js');
+const { registerObserver } = require('./perfHook.js');
 
-var js = ';(' + installGlobalHook.toString() + '(window))';
+const js = ';(' + installGlobalHook.toString() + '(window))' +
+  ';(' + registerObserver.toString() + '())';
 
-var script = document.createElement('script');
+const script = document.createElement('script');
 script.textContent = js;
 document.documentElement.appendChild(script);
 script.parentNode.removeChild(script);
