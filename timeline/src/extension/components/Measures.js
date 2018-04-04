@@ -33,12 +33,12 @@ export class Measures extends React.Component {
 
   componentDidMount(){
    this.buildTimelineData();
-   //this.buildFiberlineData();
+   this.buildFiberlineData();
   }
 
   componentWillReceiveProps(){
     this.buildTimelineData();
-    //this.buildFiberlineData();
+    this.buildFiberlineData();
     console.log(this.props.workLoopMeasures)
   }
 
