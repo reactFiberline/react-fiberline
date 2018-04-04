@@ -25,7 +25,7 @@ export default function formatFiberlineData(data) {
     let datum = { 
       x0: data[keys[i]].workStarted[0].time/1000, 
       x: data[keys[i]].workCompleted[0].time/1000,
-      name: keys[i]
+      name: data[keys[i]].workStarted[0].tag
     };
 
     datum["color"] = Math.random()*.1;
