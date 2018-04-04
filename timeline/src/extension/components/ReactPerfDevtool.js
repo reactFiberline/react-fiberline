@@ -1,8 +1,9 @@
 import React from 'react'
 import { ErrorComponent } from './ErrorComponent'
 import { Measures } from './Measures'
-import { Buttons } from './Buttons'
+//import { Buttons } from './Buttons'
 import retrocycle from './retrocycle'
+import reduceHook from './reduceHook'
 // These fields are evaluated in the inspectedWindow to get information about measures.
 let queries = {
   measuresLength: 'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.length)',
@@ -85,7 +86,7 @@ export class ReactPerfDevtool extends React.Component {
 
       this.setState({
         loading: false,
-        workLoopMeasures: retrocycle(JSON.parse(measures))
+        workLoopMeasures: reduceHook(retrocycle(JSON.parse(measures)))
       })
     })
   }
