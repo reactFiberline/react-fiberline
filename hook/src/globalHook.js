@@ -19,18 +19,14 @@ function globalHook(window) {
 
         if (!b.fiber) return a;
 
-        if (!a[b.fiber._debugID]){
-            a[b.fiber._debugID] = {};
+        if (!a[b.fiber._debugID]) {
+            a[b.fiber._debugID] = {
+                'time': b.time,
+                'evt': b.evt,
+                'tag': b.fiber.tag,
+                // 'type': b.fiber.type
+            }
         }
-
-        if (!a[b.fiber._debugID][b.evt]) a[b.fiber._debugID][b.evt] = [];
-        a[b.fiber._debugID][b.evt].push({
-            'time': b.time,
-            'child': b.child,
-            'effectTag': b.fiber.effectTag,
-            'effectTagEnglish': getEffectTag(b.fiber.effectTag),
-            'tag': getTag(b.fiber.tag),
-        })
         return a;
       }, {}));
     },
