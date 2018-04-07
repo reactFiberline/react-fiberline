@@ -91,7 +91,7 @@ export class ReactPerfDevtool extends React.Component {
       console.log('in RPD, measures:', measures)
       this.setState({
         loading: false,
-        workLoopMeasures: reduceHook(JSON.parse(measures))
+        workLoopMeasures: JSON.parse(measures)
       })
     })
   }

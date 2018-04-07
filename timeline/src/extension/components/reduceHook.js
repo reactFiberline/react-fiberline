@@ -82,7 +82,7 @@ function getEffectTag(effectTag) {
 export default function reduceHook(hook) {
     return hook.reduce((a, b) => {
 
-        if (!b.fiber._debugID) return a;
+        // if (!b.fiber._debugID) return a;
 
         if (!a[b.fiber._debugID]){
             a[b.fiber._debugID] = [];
