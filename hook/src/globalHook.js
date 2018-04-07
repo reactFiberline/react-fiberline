@@ -15,20 +15,22 @@ function globalHook(window) {
       }
     },
     toJSON: function(obj = this.fiberlineEvents) {
-      return JSON.stringify(obj.reduce((a, b) => {
+        const x = []
+        x.push(obj.reduce((a, b) => {
 
-        if (!b.fiber) return a;
+            if (!b.fiber) return a;
 
-        if (!a[b.fiber._debugID]) {
-            a[b.fiber._debugID] = {
-                'time': b.time,
-                'evt': b.evt,
-                'tag': b.fiber.tag,
-                // 'type': b.fiber.type
+            if (!a[b.fiber._debugID]) {
+                a[b.fiber._debugID] = {
+                    'time': b.time,
+                    'evt': b.evt,
+                    'tag': b.fiber.tag,
+                    // 'type': b.fiber.type
+                }
             }
-        }
-        return a;
-      }, {}));
+            return a;
+        }, {}));
+        return JSON.stringify(x);
     },
     toCircularJSON: function(object = this.fiberlineEvents) {
 
