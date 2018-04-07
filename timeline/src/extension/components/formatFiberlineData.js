@@ -9,15 +9,15 @@ export default function formatFiberlineData(data){
   const result = [];
 
   for (let i = dataCache.length; i < keys.length-1; i++){
-    // for (let j = 0; j < data[keys[i]].length-1; j++){
+    for (let j = 0; j < data[keys[i]].length-1; j++){
 
       const datum = { 
-        x0: data[keys[i]].time/1000, 
-        x: data[keys[i+1]].time/1000,
-        name: data[keys[i]].evt,
-        label: data[keys[i]].evt,
+        x0: data[keys[i]][j].time/1000, 
+        x: data[keys[i]][j+1].time/1000,
+        name: data[keys[i]][j].evt,
+        label: data[keys[i]][j].evt,
 
-        y: keys[i],
+        y: keys[i][j],
         // color: getColor(data[keys[i]][j].eventName)
       };
 
@@ -25,7 +25,7 @@ export default function formatFiberlineData(data){
       console.log('datum=', datum)
     }
     
-  // }
+  }
   dataCache = dataCache.concat(result)
   return dataCache;
 

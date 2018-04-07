@@ -182,7 +182,7 @@ export class Measures extends React.Component {
 
           />
           <VictoryBar
-            barRatio={2}
+            barRatio={1.5}
             horizontal
             style={{
               data: {
@@ -209,7 +209,7 @@ export class Measures extends React.Component {
                   return [
                     {
                       target: "data",
-                      mutation: () => ({ style: { fill: "#3de285", width: 50 } })
+                      mutation: () => ({ style: { fill: "#3de285", width: 40 } })
                     }, {
                       target: "labels",
                       mutation: () => ({ active: true })
@@ -264,7 +264,7 @@ export class Measures extends React.Component {
           />
 
           <VictoryBar 
-            barRatio={2}
+            barRatio={1.5}
             horizontal
             style={{
               data: {
@@ -290,7 +290,7 @@ export class Measures extends React.Component {
                   return [
                     {
                       target: "data",
-                      mutation: () => ({ style: { fill: "#3de285", width: 25 } })
+                      mutation: () => ({ style: { fill: "#3de285", width: 20 } })
                     }, {
                       target: "labels",
                       mutation: () => ({ active: true })
