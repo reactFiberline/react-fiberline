@@ -10,11 +10,8 @@ let queries = {
   measuresLength: 'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.length)',
   rawMeasures: 'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.rawMeasures)',
   //updateQueues: 'JSON.stringify(__REACT_DEVTOOLS_GLOBAL_HOOK__.updateQueues)',
-<<<<<<< HEAD
   // workLoopMeasures: `__REACT_FIBERLINE_GLOBAL_HOOK__.toJSON()`,
-=======
-  workLoopMeasures: '__REACT_FIBERLINE_GLOBAL_HOOK__.toJSON()',
->>>>>>> timeline
+
 
   clear: `__REACT_PERF_DEVTOOL_GLOBAL_STORE__ = {
           length: 0,
@@ -93,22 +90,11 @@ export class ReactPerfDevtool extends React.Component {
         this.setErrorState()
         return
       }
-<<<<<<< HEAD
-
-      this.setState((prevState) => {
-        workLoopMeasures = reduceHook(JSON.parse(measures));       
-        currentEventIndex = workLoopMeasures.length;
-        return {
-          loading: false,
-          workLoopMeasures,
-          currentEventIndex
-        }
-=======
+      
       console.log('in RPD, measures:', measures)
       this.setState({
         loading: false,
         workLoopMeasures: JSON.parse(measures)
->>>>>>> timeline
       })
     })
   }
