@@ -1,39 +1,6 @@
 
 function globalHook(window) {
 
-<<<<<<< HEAD
-  const hook = {
-    _listeners: {},
-    on: function(evt, fn) {
-        if (!hook._listeners[evt]) {
-            hook._listeners[evt] = [];
-        }
-        hook._listeners[evt].push(fn);
-    },
-    emit: function(evt, data) {
-        if (hook._listeners[evt]) {
-            hook._listeners[evt].map(fn => Promise.resolve().then(fn(data, evt)));
-        }
-    },
-    toJSON: function(startIndex = 0, obj = this.fiberlineEvents) {
-        const reduceThis = obj.slice(startIndex);
-        return JSON.stringify(reduceThis.reduce((a, b) => {
-
-            if (!b.fiber) return a;
-
-            if (!a[b.fiber._debugID]) {
-                a[b.fiber._debugID] = {
-                    'time': b.time,
-                    'evt': b.evt,
-                    'tag': b.fiber.tag,
-                    // 'type': b.fiber.type
-                }
-            }
-            return a;
-        }, {}));
-    },
-    toCircularJSON: function(object = this.fiberlineEvents) {
-=======
     function getTag(tag) {
         switch(tag) {
             case 0:
@@ -75,6 +42,7 @@ function globalHook(window) {
 
     const hook = {
         _listeners: {},
+        _dataCache: [],
         on: function(evt, fn) {
         if (!hook._listeners[evt]) {
             hook._listeners[evt] = [];
@@ -87,8 +55,7 @@ function globalHook(window) {
         }
         },
         toJSON: function(obj = this.fiberlineEvents) {
-            return JSON.stringify(obj.reduce((a, b) => {
->>>>>>> timeline
+            const raw = obj.reduce((a, b) => {
 
                 if (!b.fiber) return a;
 
@@ -100,7 +67,31 @@ function globalHook(window) {
                         // 'type': b.fiber.type
                     });
                 return a;
-            }, {}));
+            }, {});
+
+            const keys = Object.keys(raw);
+            const result = [];
+
+            for (let i = this._dataCache.length; i < keys.length; i++) {
+                for (let j = 0; j < raw[keys[i]].length-1; j++) {
+            
+                    const datum = { 
+                        x0: raw[keys[i]][j].time/1000, 
+                        x: raw[keys[i]][j+1].time/1000,
+                        name: raw[keys[i]][j].tag,
+                        label: raw[keys[i]][j].evt,
+                
+                        y: keys[i],
+                        // color: getColor(data[keys[i]][j].eventName)
+                    };
+                
+                    result.push(datum)
+                }
+                
+            }
+            // console.log('datum=', result)
+            this._dataCache = this._dataCache.concat(result)
+            return JSON.stringify(this._dataCache);
         },
         toCircularJSON: function(object = this.fiberlineEvents) {
 
@@ -151,15 +142,9 @@ function globalHook(window) {
         updatequeueLog: [],
     };
 
-<<<<<<< HEAD
-  Object.defineProperty(window, '__REACT_FIBERLINE_GLOBAL_HOOK__', {
-        value: hook,
-  });
-=======
     Object.defineProperty(window, '__REACT_FIBERLINE_GLOBAL_HOOK__', {
         value: hook,
     });
->>>>>>> timeline
 }
 
 module.exports = globalHook;
