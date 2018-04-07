@@ -4,7 +4,7 @@ let dataCache = []
 
 
 export default function formatFiberlineData(data){
-  console.log('formatter', data)
+  // console.log('formatter', data)
   // data = data[0]
   const keys = Object.keys(data);
   const result = [];
@@ -15,7 +15,7 @@ export default function formatFiberlineData(data){
       const datum = { 
         x0: data[keys[i]][j].time/1000, 
         x: data[keys[i]][j+1].time/1000,
-        name: data[keys[i]][j].evt,
+        name: data[keys[i]][j].tag,
         label: data[keys[i]][j].evt,
 
         y: keys[i],
@@ -26,7 +26,7 @@ export default function formatFiberlineData(data){
     }
     
   }
-  console.log('datum=', result)
+  // console.log('datum=', result)
   dataCache = dataCache.concat(result)
   return dataCache;
 
