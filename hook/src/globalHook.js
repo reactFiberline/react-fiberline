@@ -20,14 +20,13 @@ function globalHook(window) {
 
             if (!b.fiber) return a;
 
-            if (!a[b.fiber._debugID]) {
-                a[b.fiber._debugID] = {
+            if (!a[b.fiber._debugID]) a[b.fiber._debugID] = [];
+                 a[b.fiber._debugID].push({
                     'time': b.time,
                     'evt': b.evt,
                     'tag': b.fiber.tag,
                     // 'type': b.fiber.type
-                }
-            }
+                });
             return a;
         }, {}));
         return JSON.stringify(x);
