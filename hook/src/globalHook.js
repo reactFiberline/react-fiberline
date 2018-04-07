@@ -42,6 +42,7 @@ function globalHook(window) {
 
     const hook = {
         _listeners: {},
+        _dataCache: [],
         on: function(evt, fn) {
         if (!hook._listeners[evt]) {
             hook._listeners[evt] = [];
@@ -54,7 +55,7 @@ function globalHook(window) {
         }
         },
         toJSON: function(obj = this.fiberlineEvents) {
-            return JSON.stringify(obj.reduce((a, b) => {
+            const raw = obj.reduce((a, b) => {
 
                 if (!b.fiber) return a;
 
@@ -66,7 +67,31 @@ function globalHook(window) {
                         // 'type': b.fiber.type
                     });
                 return a;
-            }, {}));
+            }, {});
+
+            const keys = Object.keys(raw);
+            const result = [];
+
+            for (let i = this._dataCache.length; i < keys.length; i++) {
+                for (let j = 0; j < raw[keys[i]].length-1; j++) {
+            
+                    const datum = { 
+                        x0: raw[keys[i]][j].time/1000, 
+                        x: raw[keys[i]][j+1].time/1000,
+                        name: raw[keys[i]][j].tag,
+                        label: raw[keys[i]][j].evt,
+                
+                        y: keys[i],
+                        // color: getColor(data[keys[i]][j].eventName)
+                    };
+                
+                    result.push(datum)
+                }
+                
+            }
+            // console.log('datum=', result)
+            this._dataCache = this._dataCache.concat(result)
+            return JSON.stringify(this._dataCache);
         },
         toCircularJSON: function(object = this.fiberlineEvents) {
 
