@@ -33,7 +33,7 @@ export default function formatTimelineData(data) {
       // }
     }
 
-    let datum = { x0: data[i].startTime / 1000, x: (data[i].startTime + data[i].duration) / 1000, name: data[i].name, label: data[i].name };
+    let datum = { x0: data[i].startTime/1000, x: (data[i].startTime + data[i].duration)/1000, name: data[i].name };
 
     datum["color"] = Math.random()*.1;
 
