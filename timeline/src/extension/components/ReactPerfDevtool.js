@@ -10,7 +10,7 @@ let queries = {
   rawMeasures:
     'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.rawMeasures)',
   //updateQueues: 'JSON.stringify(__REACT_DEVTOOLS_GLOBAL_HOOK__.updateQueues)',
-  workLoopMeasures: '__REACT_FIBERLINE_GLOBAL_HOOK__.toCircularJSON()',
+  workLoopMeasures: '__REACT_FIBERLINE_GLOBAL_HOOK__.toJSON()',
 
   clear: `__REACT_PERF_DEVTOOL_GLOBAL_STORE__ = {
           length: 0,
@@ -20,10 +20,10 @@ let queries = {
 }
 
 
-const divStyle = {
-  paddingLeft: "400px",
-  width: "600px"
-};
+// const divStyle = {
+//   paddingLeft: "400px",
+//   width: "600px"
+// };
 
 export class ReactPerfDevtool extends React.Component {
   timer = null
@@ -46,12 +46,17 @@ export class ReactPerfDevtool extends React.Component {
 
   componentDidMount() {
     this.setState({ loading: true })
-    this.timer = setInterval(() => {
+    setTimeout(() => {
       this.getMeasures();
-
       this.getWorkLoopMeasures();
 
-    }, 2000)
+    }, 3500)
+    // this.timer = setInterval(() => {
+    //   this.getMeasures();
+
+    //   // this.getWorkLoopMeasures();
+
+    // }, 2000)
   }
 
   componentWillUnmount() {
@@ -83,10 +88,10 @@ export class ReactPerfDevtool extends React.Component {
         this.setErrorState()
         return
       }
-
+      console.log('in RPD, measures:', measures)
       this.setState({
         loading: false,
-        workLoopMeasures: reduceHook(retrocycle(JSON.parse(measures)))
+        workLoopMeasures: JSON.parse(measures)
       })
     })
   }
@@ -125,7 +130,9 @@ export class ReactPerfDevtool extends React.Component {
 
     return (
 
-      <div style={{"background":"#19004c", "height":"800px", width:"1040px"}}>
+      <div 
+        style={{"height":"800px", width:"1040px"}}
+        >
 
         {this.state.hasError ? (
           <ErrorComponent />
@@ -133,7 +140,8 @@ export class ReactPerfDevtool extends React.Component {
           <React.Fragment>
 
             <Measures workLoopMeasures={this.state.workLoopMeasures}
-            rawMeasures={this.state.rawMeasures} reload={this.reload}/>
+            rawMeasures={this.state.rawMeasures} reload={this.reload}
+            getWorkLoopMeasures={this.getWorkLoopMeasures} />
 
           </React.Fragment>
         )}

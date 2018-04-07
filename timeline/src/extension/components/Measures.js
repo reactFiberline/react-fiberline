@@ -4,6 +4,7 @@ import Highlight from './Highlight'
 import formatTimelineData from './formatTimelineData'
 import formatFiberlineData from './formatFiberlineData'
 import {Decimal} from 'decimal.js';
+import { VictoryTooltip, VictoryBrushContainer, VictoryZoomContainer, VictoryLabel, VictoryBar, VictoryChart, VictoryAxis, VictoryTheme, VictoryStack } from 'victory';
 
 var buttonContainerStyle = {
   paddingLeft: "400px",
@@ -27,7 +28,9 @@ export class Measures extends React.Component {
       hint: false,
       button_color_yellow: true,
       hoveredBar: false,
-      lastColor: false
+      lastColor: false,
+      searchText: '',
+      searchResult: [],
     }
   }
 
@@ -39,7 +42,7 @@ export class Measures extends React.Component {
   componentWillReceiveProps(){
     this.buildTimelineData();
     this.buildFiberlineData();
-    console.log(this.props.workLoopMeasures)
+    // console.log(this.props.workLoopMeasures)
   }
 
   buildTimelineData = () => {
@@ -85,21 +88,271 @@ export class Measures extends React.Component {
       })
     
   }
+
+  
+
+  // submitForm = (e) => {
+  //   e.preventDefault();
+  //   search(term);
+  // }
+ 
+  // search = (term) => {
+  //   const searchResults = [];
+  //   timelineMeasures.each(function (data) {
+  //     searchResults = searchData(data, term);
+
+  //   })
+  //   return searchResults;
+  // }
+
+  // searchData = (d, term) => {
+  //   var re = new RegExp(term),
+  //     searchResults = [];
+
+  //   function searchInner(d) {
+  //     var label = d.data.name;
+
+  //     if (children(d)) {
+  //       children(d).forEach(function (child) {
+  //         searchInner(child);
+  //       });
+  //     }
+
+  //     if (label.match(re)) {
+  //       d.highlight = true;
+  //       searchResults.push(d);
+  //     } else {
+  //       d.highlight = false;
+  //     }
+  //   }
+
+  //   searchInner(d);
+  //   return searchResults;
+  // }
+
+  handleZoom(domain) {
+    this.setState({ selectedDomain: domain });
+  }
+
+  handleBrush(domain) {
+    this.setState({ zoomDomain: domain });
+  }
    
   render(){
     const {lastDrawLocation, renderCell, unitOfWork} = this.state;
-    let buttonColor = this.state.button_color_yellow ? "yellow" : "green";
+    let buttonColor = this.state.button_color_yellow ? "#ffff80" : "green";
 
     return (
       <div>
 
         <div style={buttonContainerStyle}>
-          <button style={{"background": "#19004c", fontSize: "15px", color: "#ADDDE1", borderColor:"red"}} onClick={() => {this.setState({lastDrawLocation: null});}}>Reset Zoom</button>
-          <button style={{"background": buttonColor, fontSize: "15px", color: "#ADDDE1", borderColor:"red"}} onClick={() => {this.setState({zoom: !this.state.zoom, button_color_yellow:!this.state.button_color_yellow});}}>Brush/Zoom</button>
-          <button style={{"background": "#19004c", fontSize: "15px", color: "#ADDDE1", borderColor:"red"}} onClick={() => this.props.reload()}>Reload</button>   
+          <button style={{"background": "#19004c", fontSize: "15px", color: "#ADDDE1", borderColor:"teal"}} onClick={() => {this.setState({lastDrawLocation: null});}}>Reset Zoom</button>
+          <button style={{"background": buttonColor, fontSize: "15px", color: "#ADDDE1", borderColor:"teal"}} onClick={() => {this.setState({zoom: !this.state.zoom, button_color_yellow:!this.state.button_color_yellow});}}>Brush/Zoom</button>
+          <button style={{"background": "#19004c", fontSize: "15px", color: "#ADDDE1", borderColor:"teal"}} onClick={() => this.props.reload()}>Reload</button>   
+          <button style={{"background": "#19004c", fontSize: "15px", color: "#ADDDE1", borderColor:"teal"}} onClick={() => this.props.getWorkLoopMeasures()}>Get Fiberdata</button>   
+
+          <form class="form-inline" id="form">
+            <button style={{ "background": "#b3ffb3", fontSize: "15px", color: "green", borderColor: "teal" }}>Clear Search</button>
+            <input style={{
+              "background": "#ccffcc", fontSize: "15px", color: "blue", borderColor: "teal" }} onSubmit={this.submitForm} type="text" class="form-control" id="term" />
+            <button style={{ "background": "#b3ffb3", fontSize: "15px", color: "green", borderColor: "teal" }}>Search</button>
+            
+          </form>
         </div>
+
+
+        {/* Fibernode graph */}
+        <VictoryChart
+          padding={{ top: 0, left: 50, right: 50, bottom: 0 }}
+          width={1200} height={550}
+          domainPadding={10}
+
+          containerComponent={
+            <VictoryZoomContainer 
+              zoomDomain={{ x: [0, 50], y: [0, 30] }}
+              zoomDomain={this.state.zoomDomain}
+              onZoomDomainChange={this.handleZoom.bind(this)}
+            />
+          }
+        >
+          <VictoryAxis />
+          <VictoryAxis
+            dependentAxis
+            domain={[0, 20]}
+
+          />
+          <VictoryBar
+            horizontal
+            style={{
+              data: {
+                fill: "tomato",
+                stroke: "black",
+                strokeWidth: .3
+              },
+            }}
+            padding={{ top: 0, bottom: 0 }}
+            data={this.state.fiberlineMeasures}
+            x="y"
+            y0="x0"
+            y="x"
+
+            labelComponent={
+              <VictoryTooltip/>
+            }
+           
+
+            events={[{
+              target: "data",
+              eventHandlers: {
+                onMouseOver: () => {
+                  return [
+                    {
+                      target: "data",
+                      mutation: () => ({ style: { fill: "#3de285", width: 10 } })
+                    }, {
+                      target: "labels",
+                      mutation: () => ({ active: true })
+                    }
+                  ];
+                },
+                onMouseOut: () => {
+                  return [
+                    {
+                      target: "data",
+                      mutation: () => { }
+                    }, {
+                      target: "labels",
+                      mutation: () => ({ active: false })
+                    }
+                  ];
+                }
+              }
+            }]}
+
+
+            animate={{
+              duration: 300,
+
+            }}
+          />
+
+        </VictoryChart>
         
-        <XYPlot
+
+
+
+        <VictoryChart
+          padding={{ top: 0, left: 50, right: 50, bottom: 0 }}
+          width={1200} height={450} 
+          domainPadding={10}
+          theme={VictoryTheme.material}
+
+          containerComponent={
+            <VictoryZoomContainer 
+            zoomDomain={{ x: [0, 50], y: [0, 30] }} 
+            zoomDomain={this.state.zoomDomain}
+            onZoomDomainChange={this.handleZoom.bind(this)} 
+            />
+          }
+        >
+          <VictoryAxis />
+          <VictoryAxis
+            dependentAxis
+            domain={[0, -5]}
+
+          />
+
+          <VictoryBar 
+            
+            horizontal
+            style={{
+              data: {
+                fill: "tomato",
+                stroke: "black",
+                strokeWidth: 1
+              },
+            }}
+            padding={{ top: 0, bottom: 0 }}
+            data={this.state.timelineMeasures}
+            x="y"
+            y0="x0"
+            y="x"
+            label="name"
+            labelComponent={
+              <VictoryTooltip />
+            }
+            
+            events={[{
+              target: "data",
+              eventHandlers: {
+                onMouseOver: () => {
+                  return [
+                    {
+                      target: "data",
+                      mutation: () => ({ style: { fill: "#3de285", width: 10 } })
+                    }, {
+                      target: "labels",
+                      mutation: () => ({ active: true })
+                    }
+                  ];
+                },
+                onMouseOut: () => {
+                  return [
+                    {
+                      target: "data",
+                      mutation: () => { }
+                    }, {
+                      target: "labels",
+                      mutation: () => ({ active: false })
+                    }
+                  ];
+                }
+              }
+            }]}
+            
+            animate={{
+              duration: 300,
+              
+            }}
+          />
+        </VictoryChart>
+
+
+
+
+        <VictoryChart
+          padding={{ top: 0, left: 50, right: 50, bottom: 50 }}
+          width={900} height={150} 
+
+          containerComponent={
+            <VictoryBrushContainer responsive={false}
+              brushDimension="x"
+              brushDomain={this.state.selectedDomain}
+              onBrushDomainChange={this.handleBrush.bind(this)}
+            />
+          }
+        >
+
+          <VictoryAxis
+            dependentAxis
+            domain={[0, -5]}
+
+          />
+          <VictoryBar
+            horizontal
+            style={{
+              data: { fill: "tomato" }
+            }}
+            data={this.state.timelineMeasures}
+            x="y"
+            y0="x0"
+            y="x"
+          />
+
+        </VictoryChart>
+
+             
+        {/* <XYPlot
           style={{background: '#020028', marginLeft: '20px'}}
           margin={{right: 0, top: 40 }}
           xDomain={lastDrawLocation && [lastDrawLocation.left, lastDrawLocation.right]}
@@ -149,6 +402,7 @@ export class Measures extends React.Component {
             }}/>
           <YAxis hideLine hideTicks/>         
         </XYPlot>
+
 
 
         <XYPlot
@@ -203,7 +457,9 @@ export class Measures extends React.Component {
             }}/>
           <YAxis hideLine hideTicks/>     
 
-        </XYPlot>
+        </XYPlot> */}
+       
+
 
       </div>
     )
