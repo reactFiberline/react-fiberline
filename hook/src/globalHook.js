@@ -14,7 +14,7 @@ function globalHook(window) {
             hook._listeners[evt].map(fn => Promise.resolve().then(fn(data, evt)));
         }
     },
-    toJSON: function(obj = this.fiberlineEvents, startIndex = 0) {
+    toJSON: function(startIndex = 0, obj = this.fiberlineEvents) {
         const reduceThis = obj.slice(startIndex);
         return JSON.stringify(reduceThis.reduce((a, b) => {
 
