@@ -4,13 +4,13 @@ import { Measures } from './Measures'
 //import { Buttons } from './Buttons'
 import retrocycle from './retrocycle'
 import reduceHook from './reduceHook'
+
 // These fields are evaluated in the inspectedWindow to get information about measures.
 let queries = {
   measuresLength: 'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.length)',
-  rawMeasures:
-    'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.rawMeasures)',
+  rawMeasures: 'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.rawMeasures)',
   //updateQueues: 'JSON.stringify(__REACT_DEVTOOLS_GLOBAL_HOOK__.updateQueues)',
-  workLoopMeasures: '__REACT_FIBERLINE_GLOBAL_HOOK__.toCircularJSON()',
+  // workLoopMeasures: `__REACT_FIBERLINE_GLOBAL_HOOK__.toJSON()`,
 
   clear: `__REACT_PERF_DEVTOOL_GLOBAL_STORE__ = {
           length: 0,
@@ -34,6 +34,7 @@ export class ReactPerfDevtool extends React.Component {
     this.state = {
       rawMeasures: [], 
       workLoopMeasures: [],
+      currentEventIndex = 0,
 
       loading: false, 
       hasError: false 
@@ -78,15 +79,20 @@ export class ReactPerfDevtool extends React.Component {
 
 
   getWorkLoopMeasures = () => {
-    this.evaluate(queries['workLoopMeasures'], (measures, err) => {
+    this.evaluate(`__REACT_FIBERLINE_GLOBAL_HOOK__.toJSON(${this.state.currentEventIndex})`, (measures, err) => {
       if (err) {
         this.setErrorState()
         return
       }
 
-      this.setState({
-        loading: false,
-        workLoopMeasures: reduceHook(retrocycle(JSON.parse(measures)))
+      this.setState((prevState) => {
+        workLoopMeasures = reduceHook(JSON.parse(measures));       
+        currentEventIndex = workLoopMeasures.length;
+        return {
+          loading: false,
+          workLoopMeasures,
+          currentEventIndex
+        }
       })
     })
   }

@@ -4,31 +4,32 @@ function globalHook(window) {
   const hook = {
     _listeners: {},
     on: function(evt, fn) {
-      if (!hook._listeners[evt]) {
-        hook._listeners[evt] = [];
-      }
-      hook._listeners[evt].push(fn);
+        if (!hook._listeners[evt]) {
+            hook._listeners[evt] = [];
+        }
+        hook._listeners[evt].push(fn);
     },
     emit: function(evt, data) {
-      if (hook._listeners[evt]) {
-        hook._listeners[evt].map(fn => Promise.resolve().then(fn(data, evt)));
-      }
-    },
-    toJSON: function(obj = this.fiberlineEvents) {
-      return JSON.stringify(obj.reduce((a, b) => {
-
-        if (!b.fiber) return a;
-
-        if (!a[b.fiber._debugID]) {
-            a[b.fiber._debugID] = {
-                'time': b.time,
-                'evt': b.evt,
-                'tag': b.fiber.tag,
-                // 'type': b.fiber.type
-            }
+        if (hook._listeners[evt]) {
+            hook._listeners[evt].map(fn => Promise.resolve().then(fn(data, evt)));
         }
-        return a;
-      }, {}));
+    },
+    toJSON: function(obj = this.fiberlineEvents, startIndex = 0) {
+        const reduceThis = obj.slice(startIndex);
+        return JSON.stringify(reduceThis.reduce((a, b) => {
+
+            if (!b.fiber) return a;
+
+            if (!a[b.fiber._debugID]) {
+                a[b.fiber._debugID] = {
+                    'time': b.time,
+                    'evt': b.evt,
+                    'tag': b.fiber.tag,
+                    // 'type': b.fiber.type
+                }
+            }
+            return a;
+        }, {}));
     },
     toCircularJSON: function(object = this.fiberlineEvents) {
 
@@ -80,7 +81,7 @@ function globalHook(window) {
   };
 
   Object.defineProperty(window, '__REACT_FIBERLINE_GLOBAL_HOOK__', {
-    value: hook,
+        value: hook,
   });
 }
 
