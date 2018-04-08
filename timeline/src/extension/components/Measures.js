@@ -53,7 +53,8 @@ export class Measures extends React.Component {
 
   buildFiberlineData = () => {
     this.setState({
-      fiberlineMeasures: formatFiberlineData(this.props.workLoopMeasures)
+      // fiberlineMeasures: formatFiberlineData(this.props.workLoopMeasures)
+      fiberlineMeasures: this.props.workLoopMeasures
     })
   }
 
@@ -182,7 +183,7 @@ export class Measures extends React.Component {
 
           />
           <VictoryBar
-            barRatio={2}
+            barRatio={1.5}
             horizontal
             style={{
               data: {
@@ -209,7 +210,7 @@ export class Measures extends React.Component {
                   return [
                     {
                       target: "data",
-                      mutation: () => ({ style: { fill: "#3de285", width: 50 } })
+                      mutation: () => ({ style: { fill: "#3de285", width: 40 } })
                     }, {
                       target: "labels",
                       mutation: () => ({ active: true })
@@ -231,10 +232,7 @@ export class Measures extends React.Component {
             }]}
 
 
-            animate={{
-              duration: 300,
-
-            }}
+        
           />
 
         </VictoryChart>
@@ -242,7 +240,7 @@ export class Measures extends React.Component {
 
 
 
-        <VictoryChart
+        {/* <VictoryChart
           padding={{ top: 0, left: 50, right: 50, bottom: 0 }}
           width={1200} height={450} 
           domainPadding={10}
@@ -264,7 +262,7 @@ export class Measures extends React.Component {
           />
 
           <VictoryBar 
-            barRatio={2}
+            barRatio={1.5}
             horizontal
             style={{
               data: {
@@ -290,7 +288,7 @@ export class Measures extends React.Component {
                   return [
                     {
                       target: "data",
-                      mutation: () => ({ style: { fill: "#3de285", width: 25 } })
+                      mutation: () => ({ style: { fill: "#3de285", width: 20 } })
                     }, {
                       target: "labels",
                       mutation: () => ({ active: true })
@@ -317,11 +315,11 @@ export class Measures extends React.Component {
             }}
           />
         </VictoryChart>
+ */}
 
 
 
-
-        <VictoryChart
+        {/* <VictoryChart
           padding={{ top: 0, left: 50, right: 50, bottom: 50 }}
           width={900} height={150} 
 
@@ -350,7 +348,7 @@ export class Measures extends React.Component {
             y="x"
           />
 
-        </VictoryChart>
+        </VictoryChart> */}
 
              
         {/* <XYPlot

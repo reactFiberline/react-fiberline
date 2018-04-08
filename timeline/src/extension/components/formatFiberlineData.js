@@ -4,28 +4,29 @@ let dataCache = []
 
 
 export default function formatFiberlineData(data){
-  console.log('formatter', data)
+  // console.log('formatter', data)
+  // data = data[0]
   const keys = Object.keys(data);
   const result = [];
 
-  for (let i = dataCache.length; i < keys.length-1; i++){
-    // for (let j = 0; j < data[keys[i]].length-1; j++){
+  for (let i = dataCache.length; i < keys.length; i++){
+    for (let j = 0; j < data[keys[i]].length-1; j++){
 
       const datum = { 
-        x0: data[keys[i]].time/1000, 
-        x: data[keys[i+1]].time/1000,
-        name: data[keys[i]].evt,
-        label: data[keys[i]].evt,
+        x0: data[keys[i]][j].time/1000, 
+        x: data[keys[i]][j+1].time/1000,
+        name: data[keys[i]][j].tag,
+        label: data[keys[i]][j].evt,
 
         y: keys[i],
         // color: getColor(data[keys[i]][j].eventName)
       };
 
       result.push(datum)
-      console.log('datum=', datum)
     }
     
-  // }
+  }
+  // console.log('datum=', result)
   dataCache = dataCache.concat(result)
   return dataCache;
 

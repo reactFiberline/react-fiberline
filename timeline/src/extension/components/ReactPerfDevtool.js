@@ -88,7 +88,7 @@ export class ReactPerfDevtool extends React.Component {
         this.setErrorState()
         return
       }
-      console.log('in RPD, measures:', measures)
+      // console.log('in RPD, measures:', measures)
       this.setState({
         loading: false,
         workLoopMeasures: JSON.parse(measures)
