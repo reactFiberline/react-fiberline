@@ -72,12 +72,17 @@ function globalHook(window) {
             const keys = Object.keys(raw);
             const result = [];
 
+            function precisionRound(number, precision) {
+                var factor = Math.pow(10, precision);
+                return Math.round(number * factor) / factor;
+            }
+
             for (let i = this._dataCache.length; i < keys.length; i++) {
                 for (let j = 0; j < raw[keys[i]].length-1; j++) {
             
                     const datum = { 
-                        x0: raw[keys[i]][j].time/1000, 
-                        x: raw[keys[i]][j+1].time/1000,
+                        x0: precisionRound(raw[keys[i]][j].time/1000, 3), 
+                        x: precisionRound(raw[keys[i]][j+1].time/1000, 3),
                         name: raw[keys[i]][j].tag,
                         label: raw[keys[i]][j].evt,
                 

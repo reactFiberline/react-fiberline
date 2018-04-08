@@ -53,7 +53,8 @@ export class Measures extends React.Component {
 
   buildFiberlineData = () => {
     this.setState({
-      fiberlineMeasures: formatFiberlineData(this.props.workLoopMeasures)
+      // fiberlineMeasures: formatFiberlineData(this.props.workLoopMeasures)
+      fiberlineMeasures: this.props.workLoopMeasures
     })
   }
 
@@ -231,10 +232,7 @@ export class Measures extends React.Component {
             }]}
 
 
-            animate={{
-              duration: 300,
-
-            }}
+        
           />
 
         </VictoryChart>
@@ -242,7 +240,7 @@ export class Measures extends React.Component {
 
 
 
-        <VictoryChart
+        {/* <VictoryChart
           padding={{ top: 0, left: 50, right: 50, bottom: 0 }}
           width={1200} height={450} 
           domainPadding={10}
@@ -317,11 +315,11 @@ export class Measures extends React.Component {
             }}
           />
         </VictoryChart>
+ */}
 
 
 
-
-        <VictoryChart
+        {/* <VictoryChart
           padding={{ top: 0, left: 50, right: 50, bottom: 50 }}
           width={900} height={150} 
 
@@ -350,7 +348,7 @@ export class Measures extends React.Component {
             y="x"
           />
 
-        </VictoryChart>
+        </VictoryChart> */}
 
              
         {/* <XYPlot
