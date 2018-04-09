@@ -6,7 +6,7 @@ Fiber is *intense*, it is complicated and has a lot of nuance to it.  Fiberline 
 
 ## Getting Started
 ### Step 1
-Install the Fiberline Chrome extension -- [found here](www.google.com)
+Install the Fiberline Chrome extension -- [found here](https://chrome.google.com/webstore/detail/react-fiberline/ghgjnfokjgenlpnjcobcnelemicbhbbb)
 
 ### Step 2 Option 1: Use the pre-built Demo
 Since Facebook hasn't exposed a lot of Fiber's inner workings yet, there is a considerable amount of setup involved.  If you would like to skip the setup and see how Fiberline works with the now famous [movie demo](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html), take a loooong sloooow drink from your water bottle and follow these steps:
@@ -17,9 +17,13 @@ Since Facebook hasn't exposed a lot of Fiber's inner workings yet, there is a co
 
 The page will run on `localhost:3000`, as long as you installed the extension from Step 1 you can now use the React Fiberline Devtool from the inspector.
 
+![fiberline pic](https://github.com/reactFiberline/react-fiberline/blob/master/chart.jpg)
+
 #### Get a deeper look
 
 By opening your browser console and logging `__REACT_FIBERLINE_GLOBAL_HOOK__.fiberlineEvents`, you can see much more detailed information about the processes inside React Fiber.
+
+![console pic](https://github.com/reactFiberline/react-fiberline/blob/master/console.jpg)
 
 ### Step 2 Option 2: Use your own content!
 
