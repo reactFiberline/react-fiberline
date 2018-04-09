@@ -5,6 +5,8 @@ import formatTimelineData from './formatTimelineData'
 import formatFiberlineData from './formatFiberlineData'
 import {Decimal} from 'decimal.js';
 import { VictoryTooltip, VictoryBrushContainer, VictoryZoomContainer, VictoryLabel, VictoryBar, VictoryChart, VictoryAxis, VictoryTheme, VictoryStack } from 'victory';
+import _ from 'lodash'; // get more specific to make bundle smaller
+
 
 var buttonContainerStyle = {
   paddingLeft: "400px",
@@ -17,6 +19,8 @@ var buttonContainerStyle = {
 export class Measures extends React.Component {
   constructor(props) {
     super(props)
+    
+    // this.getData = this.getData.bind(this);
     this.state = {
       lastDrawLocation: null,
       zoom: false,
@@ -31,31 +35,51 @@ export class Measures extends React.Component {
       lastColor: false,
       searchText: '',
       searchResult: [],
+      entireDomain: {x: [0, 1], y: [0, 20]},
+      zoomedXDomain: [0, 1],
     }
   }
 
   componentDidMount(){
-   this.buildTimelineData();
-   this.buildFiberlineData();
+  //  this.buildTimelineData();
+   this.buildFiberlineData(this.props);
   }
 
-  componentWillReceiveProps(){
-    this.buildTimelineData();
-    this.buildFiberlineData();
-    // console.log(this.props.workLoopMeasures)
-  }
-
-  buildTimelineData = () => {
+  componentWillReceiveProps(nextProps){
+    // this.buildTimelineData();
+    console.log('nextProps WL ', nextProps.workLoopMeasures)
+    const entireDomain = this.getEntireDomain(nextProps.workLoopMeasures);
+    const fiberlineMeasures = this.buildFiberlineData(nextProps, entireDomain);
+    console.log('fl Measures ', fiberlineMeasures)
     this.setState({
-      timelineMeasures: formatTimelineData(this.props.rawMeasures)
+      entireDomain,
+      fiberlineMeasures
     })
   }
 
-  buildFiberlineData = () => {
-    this.setState({
-      // fiberlineMeasures: formatFiberlineData(this.props.workLoopMeasures)
-      fiberlineMeasures: this.props.workLoopMeasures
-    })
+  // buildTimelineData = () => {
+  //   this.setState({
+  //     timelineMeasures: formatTimelineData(this.props.rawMeasures)
+  //   })
+  // }
+
+  buildFiberlineData = (nextProps, domain) => {
+    if (nextProps.workLoopMeasures) {
+      console.log(nextProps.workLoopMeasures)
+      const { entireDomain } = this.state;
+      const { maxPoints } = this.props;
+      const _zoomedDomain = !!entireDomain ? entireDomain.x : [0, 1];
+      const filtered = nextProps.workLoopMeasures.filter(
+        (d) => (d.x >= _zoomedDomain[0] && d.x <= _zoomedDomain[1])
+      );
+      if (filtered.length > maxPoints) {
+        const k = Math.ceil(filtered.length / maxPoints);
+        return filtered.filter(
+          (d, i) => ((i % k) === 0)
+        );
+      }
+      return filtered;
+    }
   }
 
   changeButtonColor = () => {
@@ -90,46 +114,43 @@ export class Measures extends React.Component {
     
   }
 
-  
+  onDomainChange(domain) {
+    console.log(domain)
+    this.setState({
+      zoomedXDomain: domain.x,
+    });
+  }
 
-  // submitForm = (e) => {
-  //   e.preventDefault();
-  //   search(term);
-  // }
- 
-  // search = (term) => {
-  //   const searchResults = [];
-  //   timelineMeasures.each(function (data) {
-  //     searchResults = searchData(data, term);
-
-  //   })
-  //   return searchResults;
-  // }
-
-  // searchData = (d, term) => {
-  //   var re = new RegExp(term),
-  //     searchResults = [];
-
-  //   function searchInner(d) {
-  //     var label = d.data.name;
-
-  //     if (children(d)) {
-  //       children(d).forEach(function (child) {
-  //         searchInner(child);
-  //       });
+  // getData() {
+  //   if (this.state.fiberlineMeasures) {
+  //     const { zoomedXDomain } = this.state;
+  //     const { maxPoints } = this.props;
+  //     const filtered = this.state.fiberlineMeasures.filter(
+  //       (d) => (d.x >= zoomedXDomain && d.x <= zoomedXDomain[1])
+  //     );
+  //     if (filtered.length > maxPoints ) {
+  //       const k = Math.ceil(filtered.length / maxPoints);
+  //       return filtered.filter(
+  //         (d, i) => ((i % k) === 0)
+  //       );
   //     }
-
-  //     if (label.match(re)) {
-  //       d.highlight = true;
-  //       searchResults.push(d);
-  //     } else {
-  //       d.highlight = false;
-  //     }
+  //     return filtered;
   //   }
-
-  //   searchInner(d);
-  //   return searchResults;
   // }
+
+  getEntireDomain(data) {
+    // const data = this.state.fiberlineMeasures;
+    return {
+      y: [_.minBy(data, d => d.y).y, _.maxBy(data, d => d.y).y],
+      x: [ data[0].x, _.last(data).x ]
+    };
+  }
+
+  getZoomFactor() {
+    const { zoomedXDomain } = this.state;
+    const factor = 10 / (zoomedXDomain[1] - zoomedXDomain[0]);
+    return _.round(factor, factor < 3 ? 1 : 0);
+  }
 
   handleZoom(domain) {
     this.setState({ selectedDomain: domain });
@@ -142,6 +163,7 @@ export class Measures extends React.Component {
   render(){
     const {lastDrawLocation, renderCell, unitOfWork} = this.state;
     let buttonColor = this.state.button_color_yellow ? "#ffff80" : "green";
+    // let renderedData = this.getData();
 
     return (
       <div>
@@ -167,12 +189,14 @@ export class Measures extends React.Component {
           padding={{ top: 0, left: 50, right: 50, bottom: 0 }}
           width={1200} height={550}
           domainPadding={10}
+          domain={this.state.entireDomain}
 
           containerComponent={
             <VictoryZoomContainer 
-              zoomDomain={{ x: [0, 50], y: [0, 30] }}
-              zoomDomain={this.state.zoomDomain}
-              onZoomDomainChange={this.handleZoom.bind(this)}
+              // zoomDomain={{ x: [0, 50], y: [0, 30] }}
+              // zoomDomain={this.state.zoomDomain}
+              onZoomDomainChange={this.onDomainChange.bind(this)}
+              // minimumZoom={{x: 1/10000}}
             />
           }
         >
@@ -194,6 +218,7 @@ export class Measures extends React.Component {
             }}
             padding={{ top: 0, bottom: 0 }}
             data={this.state.fiberlineMeasures}
+            // data={this.state.data}
             x="y"
             y0="x0"
             y="x"
@@ -230,236 +255,10 @@ export class Measures extends React.Component {
                 }
               }
             }]}
-
-
-        
           />
 
         </VictoryChart>
         
-
-
-
-        {/* <VictoryChart
-          padding={{ top: 0, left: 50, right: 50, bottom: 0 }}
-          width={1200} height={450} 
-          domainPadding={10}
-          theme={VictoryTheme.material}
-
-          containerComponent={
-            <VictoryZoomContainer 
-            zoomDomain={{ x: [0, 50], y: [0, 30] }} 
-            zoomDomain={this.state.zoomDomain}
-            onZoomDomainChange={this.handleZoom.bind(this)} 
-            />
-          }
-        >
-          <VictoryAxis />
-          <VictoryAxis
-            dependentAxis
-            domain={[0, -5]}
-
-          />
-
-          <VictoryBar 
-            barRatio={1.5}
-            horizontal
-            style={{
-              data: {
-                fill: "tomato",
-                stroke: "black",
-                strokeWidth: 1
-              },
-            }}
-            padding={{ top: 0, bottom: 0 }}
-            data={this.state.timelineMeasures}
-            x="y"
-            y0="x0"
-            y="x"
-            label="name"
-            labelComponent={
-              <VictoryTooltip />
-            }
-            
-            events={[{
-              target: "data",
-              eventHandlers: {
-                onMouseOver: () => {
-                  return [
-                    {
-                      target: "data",
-                      mutation: () => ({ style: { fill: "#3de285", width: 20 } })
-                    }, {
-                      target: "labels",
-                      mutation: () => ({ active: true })
-                    }
-                  ];
-                },
-                onMouseOut: () => {
-                  return [
-                    {
-                      target: "data",
-                      mutation: () => { }
-                    }, {
-                      target: "labels",
-                      mutation: () => ({ active: false })
-                    }
-                  ];
-                }
-              }
-            }]}
-            
-            animate={{
-              duration: 300,
-              
-            }}
-          />
-        </VictoryChart>
- */}
-
-
-
-        {/* <VictoryChart
-          padding={{ top: 0, left: 50, right: 50, bottom: 50 }}
-          width={900} height={150} 
-
-          containerComponent={
-            <VictoryBrushContainer responsive={false}
-              brushDimension="x"
-              brushDomain={this.state.selectedDomain}
-              onBrushDomainChange={this.handleBrush.bind(this)}
-            />
-          }
-        >
-
-          <VictoryAxis
-            dependentAxis
-            domain={[0, -5]}
-
-          />
-          <VictoryBar
-            horizontal
-            style={{
-              data: { fill: "tomato" }
-            }}
-            data={this.state.timelineMeasures}
-            x="y"
-            y0="x0"
-            y="x"
-          />
-
-        </VictoryChart> */}
-
-             
-        {/* <XYPlot
-          style={{background: '#020028', marginLeft: '20px'}}
-          margin={{right: 0, top: 40 }}
-          xDomain={lastDrawLocation && [lastDrawLocation.left, lastDrawLocation.right]}
-          yType={'ordinal'}
-          width={1000}
-          height={150}
-          colorType="linear"
-          colorDomain={[0, 1]}
-          colorRange={['#007af4','#3de285']}
-          yRange={[-10, 100]}
-          >
-
-        <HorizontalBarSeries 
-          stroke={'#ADDDE1'}
-          onValueMouseOver={v => { 
-            if (!this.state.zoom){
-              this.changeBarColor(v, 'fiberlineMeasures')
-              this.setState({hint:v.name,  unitOfWork: v.x && v.y ? v : false})
-            } 
-          }}
-          onValueMouseOut={() => {
-            this.clearHovered('fiberlineMeasures')
-            this.setState({unitOfWork: false})
-            } 
-          }
-          data={this.state.fiberlineMeasures}/>
-          
-          {(this.state.zoom) ? 
-              <Highlight color={'red'} onBrushEnd={(area) => {
-                this.setState({
-                  lastDrawLocation: area
-                });
-              }} />
-          : null} 
-
-            <Hint value={unitOfWork}>
-              <div style={{background: '#3de285',fontSize:10, color:'black'}}>
-                <h3>{unitOfWork.name}</h3>
-              </div>
-            </Hint>
-            
-          <XAxis hideLine orientation="top" top={-15} tickTotal={8} style={{
-              paddingTop: 15,
-              line: {stroke: '#ADDDE1'},
-              ticks: {stroke: '#ADDDE1'},
-              //text: {stroke: 'none', fill: '#6b6b76', fontWeight: 600}
-            }}/>
-          <YAxis hideLine hideTicks/>         
-        </XYPlot>
-
-
-
-        <XYPlot
-          style={{background: '#020028', marginLeft: '20px', marginTop: '12px'}}
-          margin={{right: 0, top: 40}}
-          xDomain={lastDrawLocation && [lastDrawLocation.left, lastDrawLocation.right]}
-          yType={'ordinal'}
-          width={1000}
-          height={150}
-          colorType="linear"
-          colorDomain={[0, 1]}
-          colorRange={['orange','#3de285']}
-          yRange={[-10, 100]}
-          >
-
-          <HorizontalBarSeries 
-          stroke={'red'}
-          onValueMouseOver={v => { 
-            if (!this.state.zoom){
-              this.changeBarColor(v, 'timelineMeasures', false)
-              this.setState({hint:v.name,  renderCell: v.x && v.y ? v : false})
-            } 
-          }}
-          onValueMouseOut={() => {
-            this.clearHovered('timelineMeasures')
-            this.setState({renderCell: false})
-            } 
-          }
-          
-          data={this.state.timelineMeasures}
-          />
-          
-          {(this.state.zoom) ? 
-              <Highlight color={'red'} onBrushEnd={(area) => {
-                this.setState({
-                  lastDrawLocation: area
-                });
-              }} />
-          : null} 
-
-            <Hint value={renderCell}>
-              <div style={{background: '#3de285',fontSize:10, color:'black'}}>
-                <h3>{renderCell.name}</h3>
-              </div>
-            </Hint>
-            
-          <XAxis hideLine orientation="top" top={-15} tickTotal={8} style={{
-              paddingTop: 15,
-              line: {stroke: '#ADDDE1'},
-              ticks: {stroke: '#ADDDE1'},
-              //text: {stroke: 'none', fill: '#6b6b76', fontWeight: 600}
-            }}/>
-          <YAxis hideLine hideTicks/>     
-
-        </XYPlot> */}
-       
-
-
       </div>
     )
   }

@@ -86,7 +86,7 @@ function globalHook(window) {
                         name: raw[keys[i]][j].tag,
                         label: raw[keys[i]][j].evt,
                 
-                        y: keys[i],
+                        y: parseInt(keys[i]),
                         // color: getColor(data[keys[i]][j].eventName)
                     };
                 
