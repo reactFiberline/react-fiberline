@@ -38,7 +38,7 @@ var camelizeStyleName = require('fbjs/lib/camelizeStyleName');
 
 !React ? invariant(false, 'ReactDOM was loaded before React. Make sure you load the React package before loading ReactDOM.') : void 0;
 
-const hook = __REACT_FIBERLINE_GLOBAL_HOOK__;
+const flHook = __REACT_FIBERLINE_GLOBAL_HOOK__;
 
 var invokeGuardedCallback = function (name, func, context, a, b, c, d, e, f) {
   this._hasCaughtError = false;
@@ -5726,9 +5726,9 @@ function processChildContext(fiber, parentContext) {
     ReactDebugCurrentFiber.setCurrentPhase('getChildContext');
   }
   startPhaseTimer(fiber, 'getChildContext');
-  hook.emit('getChildContextStart', { fiber, time: performance.now() });
+  flHook.emit('getChildContextStart', { fiber, time: performance.now() });
   childContext = instance.getChildContext();
-  hook.emit('getChildContextEnd', { fiber, time: performance.now() });
+  flHook.emit('getChildContextEnd', { fiber, time: performance.now() });
   stopPhaseTimer();
   {
     ReactDebugCurrentFiber.setCurrentPhase(null);
@@ -6089,7 +6089,7 @@ function createFiberFromElement(element, mode, expirationTime) {
     fiber._debugSource = element._source;
     fiber._debugOwner = element._owner;
   }
-  hook.emit('fiberNodeCreatedFromElement', { fiber, time: performance.now() });
+  flHook.emit('fiberNodeCreatedFromElement', { fiber, time: performance.now() });
   return fiber;
 }
 
@@ -6110,21 +6110,21 @@ function throwOnInvalidElementType(type, owner) {
 function createFiberFromFragment(elements, mode, expirationTime, key) {
   var fiber = createFiber(Fragment, elements, key, mode);
   fiber.expirationTime = expirationTime;
-  hook.emit('fiberNodeCreatedFromFragment', { fiber, time: performance.now() });
+  flHook.emit('fiberNodeCreatedFromFragment', { fiber, time: performance.now() });
   return fiber;
 }
 
 function createFiberFromText(content, mode, expirationTime) {
   var fiber = createFiber(HostText, content, null, mode);
   fiber.expirationTime = expirationTime;
-  hook.emit('fiberNodeCreatedFromText', { fiber, time: performance.now() });
+  flHook.emit('fiberNodeCreatedFromText', { fiber, time: performance.now() });
   return fiber;
 }
 
 function createFiberFromHostInstanceForDeletion() {
   var fiber = createFiber(HostComponent, null, null, NoContext);
   fiber.type = 'DELETED';
-  hook.emit('fiberNodeCreatedHostForDeletion', { fiber, time: performance.now() });
+  flHook.emit('fiberNodeCreatedHostForDeletion', { fiber, time: performance.now() });
   return fiber;
 }
 
@@ -6137,7 +6137,7 @@ function createFiberFromPortal(portal, mode, expirationTime) {
     pendingChildren: null, // Used by persistent updates
     implementation: portal.implementation
   };
-  hook.emit('fiberNodeCreatedFromPortal', { fiber, time: performance.now() });
+  flHook.emit('fiberNodeCreatedFromPortal', { fiber, time: performance.now() });
   return fiber;
 }
 
@@ -6164,7 +6164,7 @@ function createFiberRoot(containerInfo, isAsync, hydrate) {
   };
   uninitializedFiber.stateNode = root;
   // fiberlineUpdateQueue(uninitializedFiber, null);
-  hook.emit('updateQueue', { fiber: uninitializedFiber, time: performance.now() });
+  flHook.emit('fiberNodeCreatedHostRoot', { fiber: uninitializedFiber, time: performance.now() });
   return root;
 }
 
@@ -6613,7 +6613,7 @@ function insertUpdateIntoFiber(fiber, update) {
   // If there's only one queue, add the update to that queue and exit.
   if (queue2 === null) {
     insertUpdateIntoQueue(queue1, update);
-    hook.emit('updateQueue', { fiber, queue: queue1, time: performance.now() });
+    flHook.emit('updateQueue', { fiber, queue: queue1, time: performance.now() });
     return;
   }
 
@@ -6621,7 +6621,7 @@ function insertUpdateIntoFiber(fiber, update) {
   if (queue1.last === null || queue2.last === null) {
     insertUpdateIntoQueue(queue1, update);
     insertUpdateIntoQueue(queue2, update);
-    hook.emit('updateQueue', { fiber, queue: queue1, time: performance.now() });
+    flHook.emit('updateQueue', { fiber, queue: queue1, time: performance.now() });
     return;
   }
 
@@ -6631,7 +6631,7 @@ function insertUpdateIntoFiber(fiber, update) {
   insertUpdateIntoQueue(queue1, update);
   // But we still need to update the `last` pointer of queue2.
   queue2.last = update;
-  hook.emit('updateQueue', { fiber, queue: queue1, time: performance.now() });
+  flHook.emit('updateQueue', { fiber, queue: queue1, time: performance.now() });
 }
 
 function getUpdateExpirationTime(fiber) {
@@ -6949,9 +6949,9 @@ var ReactFiberClassComponent = function (scheduleWork, computeUpdatePriorityForF
     var ctor = workInProgress.type;
     if (typeof instance.shouldComponentUpdate === 'function') {
       startPhaseTimer(workInProgress, 'shouldComponentUpdate');
-      hook.emit('shouldComponentUpdateStart', { fiber: workInProgress, time: performance.now() });
+      flHook.emit('shouldComponentUpdateStart', { fiber: workInProgress, time: performance.now() });
       var shouldUpdate = instance.shouldComponentUpdate(newProps, newState, newContext);
-      hook.emit('shouldComponentUpdateEnd', { fiber: workInProgress, time: performance.now() });
+      flHook.emit('shouldComponentUpdateEnd', { fiber: workInProgress, time: performance.now() });
       stopPhaseTimer();
 
       {
@@ -7081,7 +7081,7 @@ var ReactFiberClassComponent = function (scheduleWork, computeUpdatePriorityForF
 
   function callComponentWillMount(workInProgress, instance) {
     startPhaseTimer(workInProgress, 'componentWillMount');
-    hook.emit('componentWillMountStart', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('componentWillMountStart', { fiber: workInProgress, time: performance.now() });
     var oldState = instance.state;
 
     if (typeof instance.componentWillMount === 'function') {
@@ -7090,7 +7090,7 @@ var ReactFiberClassComponent = function (scheduleWork, computeUpdatePriorityForF
     if (typeof instance.UNSAFE_componentWillMount === 'function') {
       instance.UNSAFE_componentWillMount();
     }
-    hook.emit('componentWillMountEnd', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('componentWillMountEnd', { fiber: workInProgress, time: performance.now() });
     stopPhaseTimer();
 
     if (oldState !== instance.state) {
@@ -7104,14 +7104,14 @@ var ReactFiberClassComponent = function (scheduleWork, computeUpdatePriorityForF
   function callComponentWillReceiveProps(workInProgress, instance, newProps, newContext) {
     var oldState = instance.state;
     startPhaseTimer(workInProgress, 'componentWillReceiveProps');
-    hook.emit('componentWillReceivePropsStart', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('componentWillReceivePropsStart', { fiber: workInProgress, time: performance.now() });
     if (typeof instance.componentWillReceiveProps === 'function') {
       instance.componentWillReceiveProps(newProps, newContext);
     }
     if (typeof instance.UNSAFE_componentWillReceiveProps === 'function') {
       instance.UNSAFE_componentWillReceiveProps(newProps, newContext);
     }
-    hook.emit('componentWillReceivePropsEnd', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('componentWillReceivePropsEnd', { fiber: workInProgress, time: performance.now() });
     stopPhaseTimer();
 
     if (instance.state !== oldState) {
@@ -7285,14 +7285,14 @@ var ReactFiberClassComponent = function (scheduleWork, computeUpdatePriorityForF
       // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
       if ((typeof instance.UNSAFE_componentWillUpdate === 'function' || typeof instance.componentWillUpdate === 'function') && typeof ctor.getDerivedStateFromProps !== 'function') {
         startPhaseTimer(workInProgress, 'componentWillUpdate');
-        hook.emit('componentWillUpdateStart', { fiber: workInProgress, time: performance.now() });
+        flHook.emit('componentWillUpdateStart', { fiber: workInProgress, time: performance.now() });
         if (typeof instance.componentWillUpdate === 'function') {
           instance.componentWillUpdate(newProps, newState, newContext);
         }
         if (typeof instance.UNSAFE_componentWillUpdate === 'function') {
           instance.UNSAFE_componentWillUpdate(newProps, newState, newContext);
         }
-        hook.emit('componentWillUpdateEnd', { fiber: workInProgress, time: performance.now() });
+        flHook.emit('componentWillUpdateEnd', { fiber: workInProgress, time: performance.now() });
         stopPhaseTimer();
       }
       if (typeof instance.componentDidUpdate === 'function') {
@@ -7401,14 +7401,14 @@ var ReactFiberClassComponent = function (scheduleWork, computeUpdatePriorityForF
       // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
       if ((typeof instance.UNSAFE_componentWillUpdate === 'function' || typeof instance.componentWillUpdate === 'function') && typeof ctor.getDerivedStateFromProps !== 'function') {
         startPhaseTimer(workInProgress, 'componentWillUpdate');
-        hook.emit('componentWillUpdateStart', { fiber: workInProgress, time: performance.now() });
+        flHook.emit('componentWillUpdateStart', { fiber: workInProgress, time: performance.now() });
         if (typeof instance.componentWillUpdate === 'function') {
           instance.componentWillUpdate(newProps, newState, newContext);
         }
         if (typeof instance.UNSAFE_componentWillUpdate === 'function') {
           instance.UNSAFE_componentWillUpdate(newProps, newState, newContext);
         }
-        hook.emit('componentWillUpdateEnd', { fiber: workInProgress, time: performance.now() });
+        flHook.emit('componentWillUpdateEnd', { fiber: workInProgress, time: performance.now() });
         stopPhaseTimer();
       }
       if (typeof instance.componentDidUpdate === 'function') {
@@ -7711,13 +7711,13 @@ function ChildReconciler(shouldTrackSideEffects) {
       // Insert
       var created = createFiberFromFragment(fragment, returnFiber.mode, expirationTime, key);
       created['return'] = returnFiber;
-      hook.emit('fragmentStartedUpdating', { fiber: created, time: performance.now() });
+      flHook.emit('fragmentStartedUpdating', { fiber: created, time: performance.now() });
       return created;
     } else {
       // Update
       var existing = useFiber(current, fragment, expirationTime);
       existing['return'] = returnFiber;
-      hook.emit('fragmentStartedUpdating', { fiber: existing, time: performance.now() });
+      flHook.emit('fragmentStartedUpdating', { fiber: existing, time: performance.now() });
       return existing;
     }
   }
@@ -8485,7 +8485,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateFragment(current, workInProgress) {
-    hook.emit('fragmentUpdated', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('fragmentUpdated', { fiber: workInProgress, time: performance.now() });
     var nextChildren = workInProgress.pendingProps;
     if (hasContextChanged()) {
       // Normally we can bail out on props equality but if context has changed
@@ -8499,7 +8499,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateMode(current, workInProgress) {
-    hook.emit('modeUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('modeUpdating', { fiber: workInProgress, time: performance.now() });
     var nextChildren = workInProgress.pendingProps.children;
     if (hasContextChanged()) {
       // Normally we can bail out on props equality but if context has changed
@@ -8521,7 +8521,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateFunctionalComponent(current, workInProgress) {
-    hook.emit('functionalComponentUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('functionalComponentUpdating', { fiber: workInProgress, time: performance.now() });
     var fn = workInProgress.type;
     var nextProps = workInProgress.pendingProps;
 
@@ -8558,7 +8558,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
     // Push context providers early to prevent context stack mismatches.
     // During mounting we don't know the child context yet as the instance doesn't exist.
     // We will invalidate the child context in finishClassComponent() right after rendering.
-    hook.emit('classComponentUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('classComponentUpdating', { fiber: workInProgress, time: performance.now() });
     var hasContext = pushContextProvider(workInProgress);
     var shouldUpdate = void 0;
     if (current === null) {
@@ -8589,7 +8589,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function finishClassComponent(current, workInProgress, shouldUpdate, hasContext, didCaptureError, renderExpirationTime) {
-    hook.emit('classComponentUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('classComponentUpdating', { fiber: workInProgress, time: performance.now() });
     // Refs should update even if shouldComponentUpdate returns false
     markRef(current, workInProgress);
 
@@ -8652,7 +8652,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function pushHostRootContext(workInProgress) {
-    hook.emit('pushHostRootContext', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('pushHostRootContext', { fiber: workInProgress, time: performance.now() });
     var root = workInProgress.stateNode;
     if (root.pendingContext) {
       pushTopLevelContextObject(workInProgress, root.pendingContext, root.pendingContext !== root.context);
@@ -8664,7 +8664,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateHostRoot(current, workInProgress, renderExpirationTime) {
-    hook.emit('hostRootUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('hostRootUpdating', { fiber: workInProgress, time: performance.now() });
     pushHostRootContext(workInProgress);
     var updateQueue = workInProgress.updateQueue;
     if (updateQueue !== null) {
@@ -8717,7 +8717,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateHostComponent(current, workInProgress, renderExpirationTime) {
-    hook.emit('hostComponentUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('hostComponentUpdating', { fiber: workInProgress, time: performance.now() });
     pushHostContext(workInProgress);
 
     if (current === null) {
@@ -8777,7 +8777,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateHostText(current, workInProgress) {
-    hook.emit('hostTextUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('hostTextUpdating', { fiber: workInProgress, time: performance.now() });
     if (current === null) {
       tryToClaimNextHydratableInstance(workInProgress);
     }
@@ -8789,7 +8789,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function mountIndeterminateComponent(current, workInProgress, renderExpirationTime) {
-    hook.emit('indeterminateComponentMounting', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('indeterminateComponentMounting', { fiber: workInProgress, time: performance.now() });
     !(current === null) ? invariant(false, 'An indeterminate component should never have mounted. This error is likely caused by a bug in React. Please file an issue.') : void 0;
     var fn = workInProgress.type;
     var props = workInProgress.pendingProps;
@@ -8879,7 +8879,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateCallComponent(current, workInProgress, renderExpirationTime) {
-    hook.emit('callComponentUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('callComponentUpdating', { fiber: workInProgress, time: performance.now() });
     var nextProps = workInProgress.pendingProps;
     if (hasContextChanged()) {
       // Normally we can bail out on props equality but if context has changed
@@ -8908,7 +8908,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateLoadingComponent(current, workInProgress, renderExpirationTime) {
-    hook.emit('loadingComponentUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('loadingComponentUpdating', { fiber: workInProgress, time: performance.now() });
     var nextProps = workInProgress.pendingProps;
     var prevProps = workInProgress.memoizedProps;
 
@@ -8939,7 +8939,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateTimeoutComponent(current, workInProgress, renderExpirationTime) {
-    hook.emit('timeoutComponentUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('timeoutComponentUpdating', { fiber: workInProgress, time: performance.now() });
     var nextProps = workInProgress.pendingProps;
     var prevProps = workInProgress.memoizedProps;
 
@@ -8977,7 +8977,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updatePortalComponent(current, workInProgress, renderExpirationTime) {
-    hook.emit('portalComponentUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('portalComponentUpdating', { fiber: workInProgress, time: performance.now() });
     pushHostContainer(workInProgress, workInProgress.stateNode.containerInfo);
     var nextChildren = workInProgress.pendingProps;
     if (hasContextChanged()) {
@@ -9003,7 +9003,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function propagateContextChange(workInProgress, context, changedBits, renderExpirationTime) {
-    hook.emit('contextChangePropagating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('contextChangePropagating', { fiber: workInProgress, time: performance.now() });
     var fiber = workInProgress.child;
     while (fiber !== null) {
       var nextFiber = void 0;
@@ -9076,7 +9076,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateContextProvider(current, workInProgress, renderExpirationTime) {
-    hook.emit('contextProviderUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('contextProviderUpdating', { fiber: workInProgress, time: performance.now() });
     var providerType = workInProgress.type;
     var context = providerType.context;
 
@@ -9133,7 +9133,7 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
   }
 
   function updateContextConsumer(current, workInProgress, renderExpirationTime) {
-    hook.emit('contextConsumerUpdating', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('contextConsumerUpdating', { fiber: workInProgress, time: performance.now() });
     var context = workInProgress.type;
     var newProps = workInProgress.pendingProps;
 
@@ -9202,12 +9202,12 @@ var ReactFiberBeginWork = function (config, hostContext, hydrationContext, sched
     // }
 
     cloneChildFibers(current, workInProgress);
-    hook.emit('bailedOutOnFinishedWork', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('bailedOutOnFinishedWork', { fiber: workInProgress, time: performance.now() });
     return workInProgress.child;
   }
 
   function bailoutOnLowPriority(current, workInProgress) {
-    hook.emit('bailedOutOnLowPriorityWork', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('bailedOutOnLowPriorityWork', { fiber: workInProgress, time: performance.now() });
     cancelWorkTimer(workInProgress);
 
     // TODO: Handle HostComponent tags here as well and call pushHostContext()?
@@ -10274,11 +10274,11 @@ var ReactFiberCommitWork = function (config, captureError, scheduleWork, compute
 
   var callComponentWillUnmountWithTimer = function (current, instance) {
     startPhaseTimer(current, 'componentWillUnmount');
-    hook.emit('componentWillUnmountStart', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('componentWillUnmountStart', { fiber: workInProgress, time: performance.now() });
     instance.props = current.memoizedProps;
     instance.state = current.memoizedState;
     instance.componentWillUnmount();
-    hook.emit('componentWillUnmountStop', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('componentWillUnmountStop', { fiber: workInProgress, time: performance.now() });
     stopPhaseTimer();
   };
 
@@ -10336,21 +10336,21 @@ var ReactFiberCommitWork = function (config, captureError, scheduleWork, compute
           if (finishedWork.effectTag & Update) {
             if (current === null) {
               startPhaseTimer(finishedWork, 'componentDidMount');
-              hook.emit('componentDidMountStart', { fiber: finishedWork, time: performance.now() });
+              flHook.emit('componentDidMountStart', { fiber: finishedWork, time: performance.now() });
               _instance.props = finishedWork.memoizedProps;
               _instance.state = finishedWork.memoizedState;
               _instance.componentDidMount();
-              hook.emit('componentDidMountEnd', { fiber: finishedWork, time: performance.now() });
+              flHook.emit('componentDidMountEnd', { fiber: finishedWork, time: performance.now() });
               stopPhaseTimer();
             } else {
               var prevProps = current.memoizedProps;
               var prevState = current.memoizedState;
               startPhaseTimer(finishedWork, 'componentDidUpdate');
-              hook.emit('componentDidUpdateStart', { fiber: finishedWork, time: performance.now() });
+              flHook.emit('componentDidUpdateStart', { fiber: finishedWork, time: performance.now() });
               _instance.props = finishedWork.memoizedProps;
               _instance.state = finishedWork.memoizedState;
               _instance.componentDidUpdate(prevProps, prevState);
-              hook.emit('componentDidUpdateEnd', { fiber: finishedWork, time: performance.now() });
+              flHook.emit('componentDidUpdateEnd', { fiber: finishedWork, time: performance.now() });
               stopPhaseTimer();
             }
           }
@@ -11679,7 +11679,7 @@ var ReactFiberScheduler = function (config) {
     isWorking = true;
     isCommitting = true;
     startCommitTimer();
-    hook.emit('commitStart', { fiber: finishedWork, time: performance.now() });
+    flHook.emit('commitStart', { fiber: finishedWork, time: performance.now() });
     var root = finishedWork.stateNode;
     !(root.current !== finishedWork) ? invariant(false, 'Cannot commit the same tree as before. This is probably a bug related to the return field. This error is likely caused by a bug in React. Please file an issue.') : void 0;
     var committedExpirationTime = root.pendingCommitExpirationTime;
@@ -11715,7 +11715,7 @@ var ReactFiberScheduler = function (config) {
     // ref unmounts.
     nextEffect = firstEffect;
     startCommitHostEffectsTimer();
-    hook.emit('commitHostEffectsStart', { fiber: finishedWork, time: performance.now() });
+    flHook.emit('commitHostEffectsStart', { fiber: finishedWork, time: performance.now() });
     while (nextEffect !== null) {
       var didError = false;
       var error = void 0;
@@ -11735,7 +11735,7 @@ var ReactFiberScheduler = function (config) {
         }
       }
     }
-    hook.emit('commitHostEffectsEnd', { fiber: finishedWork, time: performance.now() });
+    flHook.emit('commitHostEffectsEnd', { fiber: finishedWork, time: performance.now() });
     stopCommitHostEffectsTimer();
 
     resetAfterCommit(root.containerInfo);
@@ -11752,7 +11752,7 @@ var ReactFiberScheduler = function (config) {
     // This pass also triggers any renderer-specific initial effects.
     nextEffect = firstEffect;
     startCommitLifeCyclesTimer();
-    hook.emit('commitLifeCyclesStart', { fiber: finishedWork, time: performance.now() });
+    flHook.emit('commitLifeCyclesStart', { fiber: finishedWork, time: performance.now() });
     while (nextEffect !== null) {
       var _didError = false;
       var _error = void 0;
@@ -11774,9 +11774,9 @@ var ReactFiberScheduler = function (config) {
 
     isCommitting = false;
     isWorking = false;
-    hook.emit('commitLifeCyclesEnd', { fiber: finishedWork, time: performance.now() });
+    flHook.emit('commitLifeCyclesEnd', { fiber: finishedWork, time: performance.now() });
     stopCommitLifeCyclesTimer();
-    hook.emit('commitEnd', { fiber: finishedWork, time: performance.now() });
+    flHook.emit('commitEnd', { fiber: finishedWork, time: performance.now() });
     stopCommitTimer();
     if (typeof onCommitRoot === 'function') {
       onCommitRoot(finishedWork.stateNode);
@@ -11838,7 +11838,7 @@ var ReactFiberScheduler = function (config) {
       if ((workInProgress.effectTag & Incomplete) === NoEffect) {
         // This fiber completed.
         var next = completeWork(current, workInProgress, nextRenderExpirationTime);
-        hook.emit('workCompleted', { fiber: workInProgress, time: performance.now() });
+        flHook.emit('workCompleted', { fiber: workInProgress, time: performance.now() });
         stopWorkTimer(workInProgress);
         resetExpirationTime(workInProgress, nextRenderExpirationTime);
         {
@@ -11846,7 +11846,7 @@ var ReactFiberScheduler = function (config) {
         }
 
         if (next !== null) {
-          hook.emit('workCompleted', { fiber: workInProgress, time: performance.now() });
+          flHook.emit('workCompleted', { fiber: workInProgress, time: performance.now() });
           stopWorkTimer(workInProgress);
           if (true && ReactFiberInstrumentation_1.debugTool) {
             ReactFiberInstrumentation_1.debugTool.onCompleteWork(workInProgress);
@@ -11911,7 +11911,7 @@ var ReactFiberScheduler = function (config) {
         // This fiber did not complete because something threw. Pop values off
         // the stack without entering the complete phase. If this is a boundary,
         // capture values if possible.
-        hook.emit('fiberDidNotComplete', { fiber: workInProgress, time: performance.now() });
+        flHook.emit('fiberDidNotComplete', { fiber: workInProgress, time: performance.now() });
         var _next = unwindWork(workInProgress, nextElapsedTimeMs, nextRenderIsExpired, nextRemainingTimeMs, nextStartTime, nextRenderExpirationTime);
         // Because this fiber did not complete, don't reset its expiration time.
         if (workInProgress.effectTag & DidCapture) {
@@ -11976,7 +11976,7 @@ var ReactFiberScheduler = function (config) {
 
     // See if beginning this work spawns more work.
     startWorkTimer(workInProgress);
-    hook.emit('workStarted', { fiber: workInProgress, time: performance.now() });
+    flHook.emit('workStarted', { fiber: workInProgress, time: performance.now() });
     {
       ReactDebugCurrentFiber.setCurrentFiber(workInProgress);
     }
@@ -12048,7 +12048,7 @@ var ReactFiberScheduler = function (config) {
     nextRenderIsExpired = !isAsync || nextRenderExpirationTime <= mostRecentCurrentTime;
 
     startWorkLoopTimer(nextUnitOfWork);
-    hook.emit('workLoopStart', { fiber: nextUnitOfWork, time: performance.now() });
+    flHook.emit('workLoopStart', { fiber: nextUnitOfWork, time: performance.now() });
 
     do {
       try {
@@ -12105,7 +12105,7 @@ var ReactFiberScheduler = function (config) {
           waitForTimeout(root, ms, expirationTime);
         }
         var firstUnblockedExpirationTime = findNextExpirationTimeToWorkOn(root);
-        hook.emit('workLoopEndInt', { fiber: firstUnblockedExpirationTime, time: performance.now() });
+        flHook.emit('workLoopEndInt', { fiber: firstUnblockedExpirationTime, time: performance.now() });
         onBlock(firstUnblockedExpirationTime);
         return null;
       }

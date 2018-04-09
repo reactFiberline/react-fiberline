@@ -1,0 +1,49 @@
+{
+  "name": "react-fiberline",
+  "version": "1.0.0",
+  "description": "A devtool for inspecting the performance of React Components",
+  "main": "index.js",
+  "files": [
+    "lib/shared",
+    "lib/npm"
+  ],
+  "author": "Jon Coe",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-jest": "^21.2.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "lint-staged": "^6.0.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-test-renderer": "^16.2.0",
+    "uglifyjs-webpack-plugin": "^1.1.2",
+    "webpack-cli": "^2.0.9"
+  },
+  "scripts": {
+    "build:babel": "rm -rf lib && babel src --out-dir lib",
+    "build:watch": "rm -rf ./extension/build && NODE_ENV=production ./node_modules/.bin/webpack-cli --watch --config ./webpack/webpack.config.js --progress",
+    "build": "rm -rf ./extension/build && NODE_ENV=production ./node_modules/.bin/webpack-cli --config ./webpack/webpack.config.js --progress",
+    "build:extension": "yarn format && yarn test && yarn generate"
+  },
+  "lint-staged": {
+    "*.{js,json}": [
+      "./node_modules/.bin/prettier --write --no-semi --single-quote",
+      "git add"
+    ]
+  },
+  "dependencies": {
+    "lodash": "^4.17.5",
+    "prop-types": "^15.6.1",
+    "victory": "^0.25.7",
+    "webpack": "^4.1.1"
+  }
+}

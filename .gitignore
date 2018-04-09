@@ -1,6 +1,6 @@
 # dependencies
 hook/node_modules
-
+timeline/node_modules
 hook/.eslintignore
 hook/.eslintrc.js
 
