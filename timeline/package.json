@@ -31,7 +31,7 @@
   "scripts": {
     "build:babel": "rm -rf lib && babel src --out-dir lib",
     "build:watch": "rm -rf ./extension/build && NODE_ENV=production ./node_modules/.bin/webpack-cli --watch --config ./webpack/webpack.config.js --progress",
-    "build": "rm -rf ./extension/build && NODE_ENV=production ./node_modules/.bin/webpack-cli --config ./webpack/webpack.config.js --progress && yarn build:babel",
+    "build": "rm -rf ./extension/build && NODE_ENV=production ./node_modules/.bin/webpack-cli --config ./webpack/webpack.config.js --progress",
     "build:extension": "yarn format && yarn test && yarn generate"
   },
   "lint-staged": {
@@ -41,16 +41,8 @@
     ]
   },
   "dependencies": {
-    "animation": "^0.1.3",
-    "d3-array": "^1.2.1",
-    "d3-collection": "^1.0.4",
-    "d3-color": "^1.0.3",
-    "d3-scale": "^2.0.0",
-    "d3-voronoi": "^1.1.2",
-    "decimal.js": "^10.0.0",
     "lodash": "^4.17.5",
     "prop-types": "^15.6.1",
-    "react-vis": "^1.9.1",
     "victory": "^0.25.7",
     "webpack": "^4.1.1"
   }

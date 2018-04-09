@@ -1,26 +1,19 @@
 import React from 'react'
-import {yType, XYPlot, XAxis, YAxis, LineSeries, Hint, LabelSeries, HorizontalBarSeries} from 'react-vis';
-import Highlight from './Highlight'
-import formatTimelineData from './formatTimelineData'
-import formatFiberlineData from './formatFiberlineData'
-import {Decimal} from 'decimal.js';
 import { VictoryTooltip, VictoryBrushContainer, VictoryZoomContainer, VictoryLabel, VictoryBar, VictoryChart, VictoryAxis, VictoryTheme, VictoryStack } from 'victory';
-import _ from 'lodash'; // get more specific to make bundle smaller
+import { minBy, maxBy } from 'lodash'; // get more specific to make bundle smaller
 
 
 var buttonContainerStyle = {
   paddingLeft: "400px",
   background: "#19004c",
-   padding:"10px 0 10px 400px",
-  width: "600px"
+  padding:"10px 0 10px 400px",
+  width: "600px",
 };
 
 
 export class Measures extends React.Component {
   constructor(props) {
     super(props)
-    
-    // this.getData = this.getData.bind(this);
     this.state = {
       zoom: false,
       timelineMeasures: false,
@@ -42,10 +35,8 @@ export class Measures extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
-    console.log('nextProps WL ', nextProps.workLoopMeasures)
     const entireDomain = this.getEntireDomain(nextProps.workLoopMeasures);
     const fiberlineMeasures = this.buildFiberlineData(nextProps.workLoopMeasures, entireDomain);
-    console.log('fl Measures ', fiberlineMeasures)
     this.setState({
       entireDomain,
       fiberlineMeasures
@@ -54,13 +45,16 @@ export class Measures extends React.Component {
 
   buildFiberlineData = (workLoopMeasures, domain) => {
     if (workLoopMeasures) {
-      console.log(workLoopMeasures)
       const { maxPoints } = this.props;
       const _zoomedDomain = !!domain ? domain : {x: [0, 1], y: [0, 20]};
       const filtered = workLoopMeasures.filter(
         (d) => (
           d.x >= _zoomedDomain.x[0] && 
           d.x <= _zoomedDomain.x[1] &&
+          d.y >= _zoomedDomain.y[0] &&
+          d.y <= _zoomedDomain.y[1] ||
+          d.x0 >= _zoomedDomain.x[0] && 
+          d.x0 <= _zoomedDomain.x[1] &&
           d.y >= _zoomedDomain.y[0] &&
           d.y <= _zoomedDomain.y[1]
         )
@@ -76,9 +70,7 @@ export class Measures extends React.Component {
   }
 
   onDomainChange(domain) {
-    console.log(domain)
     const fiberlineMeasures = this.buildFiberlineData(this.props.workLoopMeasures, domain)
-    console.log('wl measures ', fiberlineMeasures)
     this.setState({
       fiberlineMeasures,
       zoomedDomain: domain,
@@ -116,6 +108,7 @@ export class Measures extends React.Component {
             <VictoryZoomContainer 
               zoomDomain={this.state.zoomDomain}
               onZoomDomainChange={this.onDomainChange.bind(this)}
+              minimumZoom={{ x: .03, y: 3 }}
             />
           }
         >
