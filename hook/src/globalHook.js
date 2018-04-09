@@ -64,6 +64,7 @@ function globalHook(window) {
                         'time': b.time,
                         'evt': b.evt,
                         'tag': getTag(b.fiber.tag),
+                        // 'state': b.fiber.stateNode,
                         // 'type': b.fiber.type
                     });
                 return a;
@@ -72,29 +73,29 @@ function globalHook(window) {
             const keys = Object.keys(raw);
             const result = [];
 
-            function precisionRound(number, precision) {
-                var factor = Math.pow(10, precision);
-                return Math.round(number * factor) / factor;
-            }
+            // function precisionRound(number, precision) {
+            //     var factor = Math.pow(10, precision);
+            //     return Math.round(number * factor) / factor;
+            // }
 
             for (let i = this._dataCache.length; i < keys.length; i++) {
                 for (let j = 0; j < raw[keys[i]].length-1; j++) {
             
                     const datum = { 
-                        x0: precisionRound(raw[keys[i]][j].time/1000, 3), 
-                        x: precisionRound(raw[keys[i]][j+1].time/1000, 3),
+                        x0: raw[keys[i]][j].time/1000, 
+                        x: raw[keys[i]][j+1].time/1000,
                         name: raw[keys[i]][j].tag,
-                        label: raw[keys[i]][j].evt,
+                        label: raw[keys[i]][j].evt +
+                            ' on ' + raw[keys[i]][j].tag + 
+                            '\nat ' + raw[keys[i]][j].time/1000,
                 
                         y: parseInt(keys[i]),
-                        // color: getColor(data[keys[i]][j].eventName)
                     };
                 
                     result.push(datum)
                 }
                 
             }
-            // console.log('datum=', result)
             this._dataCache = this._dataCache.concat(result)
             return JSON.stringify(this._dataCache);
         },

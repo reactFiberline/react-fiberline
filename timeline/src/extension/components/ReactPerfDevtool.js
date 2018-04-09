@@ -17,11 +17,6 @@ let queries = {
         }`
 }
 
-const allData = _.range(0, 10, 0.001).map(x => ({
-	x: x,
-  y: Math.sin(Math.PI*x/2) * x / 10
-}));
-
 // const divStyle = {
 //   paddingLeft: "400px",
 //   width: "600px"
@@ -140,8 +135,7 @@ export class ReactPerfDevtool extends React.Component {
               rawMeasures={this.state.rawMeasures} 
               reload={this.reload}
               getWorkLoopMeasures={this.getWorkLoopMeasures} 
-              maxPoints={250}
-              data={allData}
+              maxPoints={350}
             />
 
           </React.Fragment>
