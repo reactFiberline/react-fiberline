@@ -22,10 +22,7 @@ export class Measures extends React.Component {
     
     // this.getData = this.getData.bind(this);
     this.state = {
-      lastDrawLocation: null,
       zoom: false,
-      renderCell: false,
-      unitOfWork: false,
       timelineMeasures: false,
       fiberlineMeasures: false,
       color: false,
@@ -36,20 +33,18 @@ export class Measures extends React.Component {
       searchText: '',
       searchResult: [],
       entireDomain: {x: [0, 1], y: [0, 20]},
-      zoomedXDomain: [0, 1],
+      zoomedDomain: [0, 1],
     }
   }
 
   componentDidMount(){
-  //  this.buildTimelineData();
-   this.buildFiberlineData(this.props);
+   this.buildFiberlineData(this.props.workLoopMeasures);
   }
 
   componentWillReceiveProps(nextProps){
-    // this.buildTimelineData();
     console.log('nextProps WL ', nextProps.workLoopMeasures)
     const entireDomain = this.getEntireDomain(nextProps.workLoopMeasures);
-    const fiberlineMeasures = this.buildFiberlineData(nextProps, entireDomain);
+    const fiberlineMeasures = this.buildFiberlineData(nextProps.workLoopMeasures, entireDomain);
     console.log('fl Measures ', fiberlineMeasures)
     this.setState({
       entireDomain,
@@ -57,20 +52,18 @@ export class Measures extends React.Component {
     })
   }
 
-  // buildTimelineData = () => {
-  //   this.setState({
-  //     timelineMeasures: formatTimelineData(this.props.rawMeasures)
-  //   })
-  // }
-
-  buildFiberlineData = (nextProps, domain) => {
-    if (nextProps.workLoopMeasures) {
-      console.log(nextProps.workLoopMeasures)
-      const { entireDomain } = this.state;
+  buildFiberlineData = (workLoopMeasures, domain) => {
+    if (workLoopMeasures) {
+      console.log(workLoopMeasures)
       const { maxPoints } = this.props;
-      const _zoomedDomain = !!entireDomain ? entireDomain.x : [0, 1];
-      const filtered = nextProps.workLoopMeasures.filter(
-        (d) => (d.x >= _zoomedDomain[0] && d.x <= _zoomedDomain[1])
+      const _zoomedDomain = !!domain ? domain : {x: [0, 1], y: [0, 20]};
+      const filtered = workLoopMeasures.filter(
+        (d) => (
+          d.x >= _zoomedDomain.x[0] && 
+          d.x <= _zoomedDomain.x[1] &&
+          d.y >= _zoomedDomain.y[0] &&
+          d.y <= _zoomedDomain.y[1]
+        )
       );
       if (filtered.length > maxPoints) {
         const k = Math.ceil(filtered.length / maxPoints);
@@ -82,105 +75,33 @@ export class Measures extends React.Component {
     }
   }
 
-  changeButtonColor = () => {
-    this.setState({button_color_yellow: !this.state.button_color_yellow})
-  }
-
-  clearHovered = (measures) => {
-    let temp = this.state[measures].slice()
-    //console.log('clear please',temp,'index: color ', temp[this.state.hoveredBar].color)
-    temp[this.state.hoveredBar].color = this.state.lastColor;
-    this.setState({
-      [measures]: temp
-    })
-  }
-
-  changeBarColor = (v, measures) => {
-    
-      let index = false;
-      let savedColor = false;
-      this.setState({
-        [measures]: this.state[measures].map((el,i) => {
-          if (el.x === v.x && el.y === v.y){
-            savedColor = el.color;
-            el.color = 1;
-            index = i;
-          }
-          return el;
-        }),
-        hoveredBar: index,
-        lastColor: savedColor
-      })
-    
-  }
-
   onDomainChange(domain) {
     console.log(domain)
+    const fiberlineMeasures = this.buildFiberlineData(this.props.workLoopMeasures, domain)
+    console.log('wl measures ', fiberlineMeasures)
     this.setState({
-      zoomedXDomain: domain.x,
+      fiberlineMeasures,
+      zoomedDomain: domain,
     });
   }
 
-  // getData() {
-  //   if (this.state.fiberlineMeasures) {
-  //     const { zoomedXDomain } = this.state;
-  //     const { maxPoints } = this.props;
-  //     const filtered = this.state.fiberlineMeasures.filter(
-  //       (d) => (d.x >= zoomedXDomain && d.x <= zoomedXDomain[1])
-  //     );
-  //     if (filtered.length > maxPoints ) {
-  //       const k = Math.ceil(filtered.length / maxPoints);
-  //       return filtered.filter(
-  //         (d, i) => ((i % k) === 0)
-  //       );
-  //     }
-  //     return filtered;
-  //   }
-  // }
-
   getEntireDomain(data) {
-    // const data = this.state.fiberlineMeasures;
     return {
       y: [_.minBy(data, d => d.y).y, _.maxBy(data, d => d.y).y],
-      x: [ data[0].x, _.last(data).x ]
+      x: [ data[0].x, _.maxBy(data, d => d.x).x ]
     };
-  }
-
-  getZoomFactor() {
-    const { zoomedXDomain } = this.state;
-    const factor = 10 / (zoomedXDomain[1] - zoomedXDomain[0]);
-    return _.round(factor, factor < 3 ? 1 : 0);
-  }
-
-  handleZoom(domain) {
-    this.setState({ selectedDomain: domain });
-  }
-
-  handleBrush(domain) {
-    this.setState({ zoomDomain: domain });
   }
    
   render(){
-    const {lastDrawLocation, renderCell, unitOfWork} = this.state;
     let buttonColor = this.state.button_color_yellow ? "#ffff80" : "green";
-    // let renderedData = this.getData();
 
     return (
       <div>
 
         <div style={buttonContainerStyle}>
-          <button style={{"background": "#19004c", fontSize: "15px", color: "#ADDDE1", borderColor:"teal"}} onClick={() => {this.setState({lastDrawLocation: null});}}>Reset Zoom</button>
-          <button style={{"background": buttonColor, fontSize: "15px", color: "#ADDDE1", borderColor:"teal"}} onClick={() => {this.setState({zoom: !this.state.zoom, button_color_yellow:!this.state.button_color_yellow});}}>Brush/Zoom</button>
+          <button style={{"background": "#19004c", fontSize: "15px", color: "#ADDDE1", borderColor:"teal"}} onClick={() => {this.setState({zoomDomain: this.state.entireDomain});}}>Reset Zoom</button>
           <button style={{"background": "#19004c", fontSize: "15px", color: "#ADDDE1", borderColor:"teal"}} onClick={() => this.props.reload()}>Reload</button>   
           <button style={{"background": "#19004c", fontSize: "15px", color: "#ADDDE1", borderColor:"teal"}} onClick={() => this.props.getWorkLoopMeasures()}>Get Fiberdata</button>   
-
-          <form class="form-inline" id="form">
-            <button style={{ "background": "#b3ffb3", fontSize: "15px", color: "green", borderColor: "teal" }}>Clear Search</button>
-            <input style={{
-              "background": "#ccffcc", fontSize: "15px", color: "blue", borderColor: "teal" }} onSubmit={this.submitForm} type="text" class="form-control" id="term" />
-            <button style={{ "background": "#b3ffb3", fontSize: "15px", color: "green", borderColor: "teal" }}>Search</button>
-            
-          </form>
         </div>
 
 
@@ -193,10 +114,8 @@ export class Measures extends React.Component {
 
           containerComponent={
             <VictoryZoomContainer 
-              // zoomDomain={{ x: [0, 50], y: [0, 30] }}
-              // zoomDomain={this.state.zoomDomain}
+              zoomDomain={this.state.zoomDomain}
               onZoomDomainChange={this.onDomainChange.bind(this)}
-              // minimumZoom={{x: 1/10000}}
             />
           }
         >
@@ -235,7 +154,7 @@ export class Measures extends React.Component {
                   return [
                     {
                       target: "data",
-                      mutation: () => ({ style: { fill: "#3de285", width: 40 } })
+                      mutation: () => ({ style: { fill: "#3de285" } })
                     }, {
                       target: "labels",
                       mutation: () => ({ active: true })
