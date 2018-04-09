@@ -7,9 +7,7 @@ import reduceHook from './reduceHook'
 // These fields are evaluated in the inspectedWindow to get information about measures.
 let queries = {
   measuresLength: 'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.length)',
-  rawMeasures:
-    'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.rawMeasures)',
-  //updateQueues: 'JSON.stringify(__REACT_DEVTOOLS_GLOBAL_HOOK__.updateQueues)',
+  rawMeasures: 'JSON.stringify(__REACT_PERF_DEVTOOL_GLOBAL_STORE__.rawMeasures)',
   workLoopMeasures: '__REACT_FIBERLINE_GLOBAL_HOOK__.toJSON()',
 
   clear: `__REACT_PERF_DEVTOOL_GLOBAL_STORE__ = {
@@ -19,6 +17,10 @@ let queries = {
         }`
 }
 
+const allData = _.range(0, 10, 0.001).map(x => ({
+	x: x,
+  y: Math.sin(Math.PI*x/2) * x / 10
+}));
 
 // const divStyle = {
 //   paddingLeft: "400px",
@@ -51,12 +53,6 @@ export class ReactPerfDevtool extends React.Component {
       this.getWorkLoopMeasures();
 
     }, 3500)
-    // this.timer = setInterval(() => {
-    //   this.getMeasures();
-
-    //   // this.getWorkLoopMeasures();
-
-    // }, 2000)
   }
 
   componentWillUnmount() {
@@ -88,7 +84,7 @@ export class ReactPerfDevtool extends React.Component {
         this.setErrorState()
         return
       }
-      // console.log('in RPD, measures:', measures)
+      
       this.setState({
         loading: false,
         workLoopMeasures: JSON.parse(measures)
@@ -139,9 +135,14 @@ export class ReactPerfDevtool extends React.Component {
         ) : (
           <React.Fragment>
 
-            <Measures workLoopMeasures={this.state.workLoopMeasures}
-            rawMeasures={this.state.rawMeasures} reload={this.reload}
-            getWorkLoopMeasures={this.getWorkLoopMeasures} />
+            <Measures 
+              workLoopMeasures={this.state.workLoopMeasures}
+              rawMeasures={this.state.rawMeasures} 
+              reload={this.reload}
+              getWorkLoopMeasures={this.getWorkLoopMeasures} 
+              maxPoints={250}
+              data={allData}
+            />
 
           </React.Fragment>
         )}
